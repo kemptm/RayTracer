@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{011057BD-FCC1-41A4-853D-42C6FF173129}</ProjectGuid>
+    <ProjectGuid>{3C1F2A0A-C0A3-4E6E-B208-C953D7056796}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>DebugTransforms</RootNamespace>
-    <AssemblyName>DebugTransforms</AssemblyName>
+    <RootNamespace>DebugPlanes</RootNamespace>
+    <AssemblyName>DebugPlanes</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -56,7 +56,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RayTracerLib\RayTracerLib.csproj">
+    <ProjectReference Include="..\..\RayTracerLib\RayTracerLib.csproj">
       <Project>{0dbe07ce-b53f-457f-b1f2-3d93dce8551b}</Project>
       <Name>RayTracerLib</Name>
     </ProjectReference>

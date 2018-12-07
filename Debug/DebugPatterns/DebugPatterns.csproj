@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6ED1EDD4-9750-4619-99C0-997CF4DA52EF}</ProjectGuid>
+    <ProjectGuid>{91960254-B4C7-4A67-87EC-9A3AA32FB5BE}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>DebugLightAndShading</RootNamespace>
-    <AssemblyName>DebugLightAndShading</AssemblyName>
+    <RootNamespace>DebugPatterns</RootNamespace>
+    <AssemblyName>DebugPatterns</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -56,7 +56,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RayTracerLib\RayTracerLib.csproj">
+    <ProjectReference Include="..\..\RayTracerLib\RayTracerLib.csproj">
       <Project>{0dbe07ce-b53f-457f-b1f2-3d93dce8551b}</Project>
       <Name>RayTracerLib</Name>
     </ProjectReference>

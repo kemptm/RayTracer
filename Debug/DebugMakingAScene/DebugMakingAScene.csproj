@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{36F60B01-350B-44F8-8751-3017BDA9CDA8}</ProjectGuid>
+    <ProjectGuid>{72EB67C2-B7D3-414B-B4A9-6CC44BFBFA5B}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>DebugPPM</RootNamespace>
-    <AssemblyName>DebugPPM</AssemblyName>
+    <RootNamespace>DebugMakingAScene</RootNamespace>
+    <AssemblyName>DebugMakingAScene</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,8 +33,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MathNet.Numerics, Version=4.5.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MathNet.Numerics.4.5.1\lib\net461\MathNet.Numerics.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,9 +53,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RayTracerLib\RayTracerLib.csproj">
+    <ProjectReference Include="..\..\RayTracerLib\RayTracerLib.csproj">
       <Project>{0dbe07ce-b53f-457f-b1f2-3d93dce8551b}</Project>
       <Name>RayTracerLib</Name>
     </ProjectReference>
