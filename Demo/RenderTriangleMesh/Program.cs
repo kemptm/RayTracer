@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+using NDesk.Options;
 using MathNet.Numerics.LinearAlgebra.Double;
 using RayTracerLib;
 
@@ -31,20 +33,68 @@ namespace RenderTriangleMesh
         ///-------------------------------------------------------------------------------------------------
 
         static void Main(string[] args) {
+            bool show_help = false;
+            string outputFile = "";
+            uint canvasX = 200;
+            uint canvasY = 200;
+            var pa = new OptionSet() {
+                { "o|output=", "the {NAME} of the output PMM file.",
+                    v => outputFile = v },
+                { "x|xdimension=",
+                    "The x dimension of the output image.",
+                    (uint v) => canvasX = v },
+                { "y|ydimension=",
+                    "The x dimension of the output image.",
+                    (uint v) => canvasY = v},
+                { "h|help",  "show this message and exit",
+                    v => show_help = v != null },
+            };
+
+            List<string> extra;
+            try {
+                extra = pa.Parse(args);
+            }
+            catch (OptionException e) {
+                Console.Write("RenderTriangleMesh: ");
+                Console.WriteLine(e.Message);
+                Console.WriteLine("Try `RenderTriangleMesh --help' for more information.");
+                return;
+            }
+
+            if (show_help) {
+                Console.WriteLine("RenderTriangleMesh [Options] inputFileName");
+                Console. WriteLine("Options: ");
+                pa.WriteOptionDescriptions(Console.Out);
+                return;
+            }
+
+            /// The only positional parameter is the file name to process
+            
+            if (extra.Count != 1) {
+                Console.Write("RenderTriangleMesh: exactly one input file name permitted.");
+                return;
+            }
+
+            string ifn = extra[0];
+            string ifp = Path.GetDirectoryName(ifn);
+            if (outputFile == "") {
+                outputFile = Path.Combine(ifp, Path.GetFileNameWithoutExtension(ifn) + ".ppm");
+            }
+
             Console.WriteLine("Started: " + DateTime.Now.ToString());
             World w = new World();
 
             /// Read the triangular mesh and color all the triangles red.
-            OBJFileParser p = new OBJFileParser("Dog.obj");
+            OBJFileParser p = new OBJFileParser(ifn);
             Color red = new Color(1, 0, 0);
             Group g = p.Groups[1];
             Console.WriteLine("triangles in default: " + g.Children.Count().ToString());
-            foreach(Shape s in g.Children) {
+            foreach (Shape s in g.Children) {
                 s.Material.Color = red;
             }
             /// Transform the group containing the triangular mesh to correspond to our world and camera view point.
-            g.Transform = (Matrix)(p.DefaultGroup.Transform  * MatrixOps.CreateTranslationTransform(10, 15, -10) * 
-                            MatrixOps.CreateRotationZTransform(Math.PI/2) * MatrixOps.CreateRotationYTransform(Math.PI/2));
+            g.Transform = (Matrix)(p.DefaultGroup.Transform * MatrixOps.CreateTranslationTransform(10, 15, -10) *
+                            MatrixOps.CreateRotationZTransform(Math.PI / 2) * MatrixOps.CreateRotationYTransform(Math.PI / 2));
             w.AddObject(g);
 
             /// three planes make up the background.
@@ -70,7 +120,7 @@ namespace RenderTriangleMesh
 
             /// Render the image
             Console.WriteLine("Now rendering ...");
-            Camera camera = new Camera(400, 400, Math.PI / 4);
+            Camera camera = new Camera(canvasX, canvasY, Math.PI / 4);
             double cy = 35;
             double cz = -50;
             double cmult = 1.5;
@@ -83,7 +133,7 @@ namespace RenderTriangleMesh
 
             String ppm = image.ToPPM();
             String ppmname = ("ToPPM.ppm");
-            System.IO.File.WriteAllText(@ppmname, ppm);
+            System.IO.File.WriteAllText(outputFile, ppm);
 
             Console.WriteLine("Finished: " + DateTime.Now.ToString());
             Console.Write("Press Enter to finish ... ");

@@ -35,6 +35,9 @@
     <Reference Include="MathNet.Numerics, Version=4.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MathNet.Numerics.4.7.0\lib\net461\MathNet.Numerics.dll</HintPath>
     </Reference>
+    <Reference Include="NDesk.Options, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -55,7 +58,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RayTracerLib\RayTracerLib.csproj">
+    <ProjectReference Include="..\..\RayTracerLib\RayTracerLib.csproj">
       <Project>{0dbe07ce-b53f-457f-b1f2-3d93dce8551b}</Project>
       <Name>RayTracerLib</Name>
     </ProjectReference>

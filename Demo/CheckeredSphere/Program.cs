@@ -1,4 +1,10 @@
-﻿using System;
+﻿///-------------------------------------------------------------------------------------------------
+// file:	Program.cs
+//
+// summary:	Implements the program class
+///-------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +15,22 @@ using RayTracerLib;
 
 namespace CheckeredSphere
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>   A demonstration program to display a checkered sphere. </summary>
+    ///
+    /// <remarks>   Kemp, 12/5/2018. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+
     class Program
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Main entry-point for this application. </summary>
+        ///
+        /// <remarks>   Kemp, 12/5/2018. </remarks>
+        ///
+        /// <param name="args"> An array of command-line argument strings. </param>
+        ///-------------------------------------------------------------------------------------------------
+
         static void Main(string[] args) {
 
             /// where we are looking from
