@@ -1,4 +1,10 @@
-﻿using System;
+﻿///-------------------------------------------------------------------------------------------------
+// file:	Program.cs
+//
+// summary:	Implements the program class
+///-------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +14,22 @@ using RayTracerLib;
 
 namespace DebugMakingAScene
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>   A program. </summary>
+    ///
+    /// <remarks>   Kemp, 1/18/2019. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+
     class Program
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Main entry-point for this application. </summary>
+        ///
+        /// <remarks>   Kemp, 1/18/2019. </remarks>
+        ///
+        /// <param name="args"> An array of command-line argument strings. </param>
+        ///-------------------------------------------------------------------------------------------------
+
         static void Main(string[] args) {
             World defaultWorld = new World();
 
@@ -18,8 +38,8 @@ namespace DebugMakingAScene
             Sphere s1 = new Sphere();
             s1.Material = new Material();
             s1.Material.Color = new Color(0.8, 1.0, 0.6);
-            s1.Material.Diffuse = 0.7;
-            s1.Material.Specular = 0.2;
+            s1.Material.Diffuse = new Color(0.7, 0.7, 0.7);
+            s1.Material.Specular = new Color(0.2,0.2,0.2);
 
             Sphere s2 = new Sphere();
             s2.Transform = MatrixOps.CreateScalingTransform(0.5, 0.5, 0.5);
@@ -55,9 +75,9 @@ namespace DebugMakingAScene
                 //ColorAtBehindRay() {
                 World world = defaultWorld.Copy();
                 Shape outer = defaultWorld.Objects[0];
-                outer.Material.Ambient = 1;
+                outer.Material.Ambient = new Color(1, 1, 1);
                 Shape inner = defaultWorld.Objects[1];
-                inner.Material.Ambient = 1;
+                inner.Material.Ambient = new Color(1, 1, 1);
                 Ray ray = new Ray(new Point(0, 0, -0.75), new RayTracerLib.Vector(0, 0, 1));
                 Color imc = inner.Material.Color;
                 Color c = world.ColorAt(ray);

@@ -189,9 +189,10 @@ namespace RayTracerLib
             if (Ops.Equals(minCorner.X, maxCorner.X)) degenerate += 1;
             if (Ops.Equals(minCorner.Y, maxCorner.Y)) degenerate += 1;
             if (Ops.Equals(minCorner.Z, maxCorner.Z)) degenerate += 1;
-            if (degenerate > 1)
+            if (degenerate > 1) {;
+                //Console.WriteLine("Degenerate Item: " + this.ToString());
                 return true; // this is degenerate, we can't check it by bounding box.  It is always in.
-
+            }
             //tmin = (bounds[r.Sign[0]].x - r.Origin.X) * r.Invdir.X;
             tmin = ((r.Sign[0] ? maxCorner.X : minCorner.X) - r.Origin.X) * r.Invdir.X;
             //tmax = (bounds[1 - r.Sign[0]].x - r.Origin.X) * r.Invdir.X;
@@ -239,6 +240,18 @@ namespace RayTracerLib
             b = b && minCorner.Equals(bds.minCorner);
             b = b && maxCorner.Equals(bds.maxCorner);
             return b;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Convert this object into a string representation. </summary>
+        ///
+        /// <remarks>   Kemp, 1/3/2019. </remarks>
+        ///
+        /// <returns>   A string that represents this object. </returns>
+        ///-------------------------------------------------------------------------------------------------
+
+        public override string ToString() {
+            return "Bounds: MinCorner = " + minCorner.ToString() + "MaxCorner = " + maxCorner.ToString();
         }
     }
 }

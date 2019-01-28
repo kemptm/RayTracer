@@ -33,6 +33,18 @@ namespace RayTracerLib
         protected Group defaultGroup;
         /// <summary>   The normals. </summary>
         protected List<Vector> normals;
+        protected MTLFileParser materials;
+        protected Material currentMaterial;
+        protected bool mirror;
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Values that represent triangle types. </summary>
+        ///
+        /// <remarks>   Kemp, 1/14/2019. </remarks>
+        ///-------------------------------------------------------------------------------------------------
+
+        public enum TriangleType { Regular, Smooth };
+        protected TriangleType tt;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets the verticies. </summary>
@@ -84,9 +96,11 @@ namespace RayTracerLib
         /// <param name="file"> The file. </param>
         ///-------------------------------------------------------------------------------------------------
 
-        public OBJFileParser(String file) {
+        public OBJFileParser(String file,TriangleType t = TriangleType.Smooth,bool m=false) {
             ParserInit();
             filename = file;
+            tt = t;
+            mirror = m;
             ParseFile(file);
 
         }
@@ -104,6 +118,8 @@ namespace RayTracerLib
             groups.Add(currentGroup);
             defaultGroup = currentGroup;
             normals = new List<Vector>();
+            mirror = false;
+            currentMaterial = new Material();
 
         }
 
@@ -118,10 +134,12 @@ namespace RayTracerLib
         public void ParseFile(String file) {
             var lines = File.ReadLines(file);
             int lineNo = 0;
+            
 
             foreach (var line in lines) {
                 lineNo++;
-                string[] words = line.Split(' ');
+                string[] blank = { " " };
+                string[] words = line.Split(blank,StringSplitOptions.RemoveEmptyEntries);
                 if (words.Count() == 0) continue;
 
                 switch (words[0]) {
@@ -138,6 +156,7 @@ namespace RayTracerLib
                                 Console.WriteLine("line " + lineNo.ToString() + ": " + e.Message);
                                 break;
                             }
+                            if (mirror) p0 = -p0;
                             vertices.Add(new Point(p0, p1, p2));
                         }
                         else {
@@ -150,13 +169,15 @@ namespace RayTracerLib
                         int v0, v1, v2;
                         int wvn0, wvn1, wvn2;
                         if (words.Count() >= 4) {
+                            SmoothTriangle st;
+                            Triangle rt;
                             try {
                                 if (words[1].Contains('/')) {
                                     string[] faceV0 = words[1].Split('/');
-                                    v0 = Int32.Parse(faceV0[0]);
+                                    v0 = Int32.Parse(faceV0[0]); // vertex 0
                                     v1 = 0;
                                     v2 = 0;
-                                    wvn0 = Int32.Parse(faceV0[2]);
+                                    wvn0 = Int32.Parse(faceV0[2]); // normal 0
                                     wvn1 = 0;
                                     wvn2 = 0;
 
@@ -164,17 +185,24 @@ namespace RayTracerLib
                                         if (words[vi].Contains("/")) {
                                             string[] faceV = words[vi].Split('/');
                                             if (faceV.Count() == 3) {
-                                                v1 = Int32.Parse(faceV[0]);
-                                                wvn1 = Int32.Parse(faceV[2]);
+                                                v1 = Int32.Parse(faceV[0]); // vertex i
+                                                wvn1 = Int32.Parse(faceV[2]); // normal i
                                             }
                                             faceV = words[vi + 1].Split('/');
                                             if (faceV.Count() == 3) {
-                                                v2 = Int32.Parse(faceV[0]);
-                                                wvn2 = Int32.Parse(faceV[2]);
+                                                v2 = Int32.Parse(faceV[0]); // vertex i+1
+                                                wvn2 = Int32.Parse(faceV[2]); // normal i+1
                                             }
-                                            SmoothTriangle st = new SmoothTriangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy(),
-                                                                                    normals[v0 - 1].Copy(),  normals[v1 - 1].Copy(),  normals[v2 - 1].Copy());
-                                            currentGroup.AddObject(st);
+                                            if (tt == TriangleType.Smooth) { 
+                                                st = new SmoothTriangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy(),
+                                                                                        normals[wvn0 - 1].Copy(), normals[wvn1 - 1].Copy(), normals[wvn2 - 1].Copy());
+                                                st.Material = currentMaterial.Copy();
+                                                currentGroup.AddObject(st);
+                                            } else {
+                                                rt = new Triangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy());
+                                                rt.Material = currentMaterial.Copy();
+                                                currentGroup.AddObject(rt);
+                                            }
                                         }
 
                                         else {
@@ -189,24 +217,33 @@ namespace RayTracerLib
                                     for (int vi = 2; vi < words.Count() - 1; vi += 1) {
                                         v1 = Int32.Parse(words[vi]);
                                         v2 = Int32.Parse(words[vi + 1]);
-                                        Triangle t = new Triangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy()); // face indicies are 1 based.
-                                        currentGroup.AddObject(t);
+                                         {
+                                            rt = new Triangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy());
+                                            rt.Material = currentMaterial.Copy();
+                                            currentGroup.AddObject(rt);
+                                        }
                                     }
                                 } 
                             }
-                            catch {
-                                Console.WriteLine("line " + lineNo.ToString() + ":  Ill formed vertex reference");
+                            catch (Exception e){
+                                Console.WriteLine("line " + lineNo.ToString() + ":  Ill formed vertex reference: " + e.Message);
+                                break;
                             }
                         }
                         else {
                            Console.WriteLine("line " + lineNo.ToString() + ":  Face must have at least 3 vertices");
                         }
                         break;
+                    case "o": // object; same as group
                     case "g": // group
                         if (words.Count() >= 2) {
-                            Group g = new Group();
-                            g.Name = words[1];
-                            groups.Add(g);
+                            Group g =GetGroup(words[1]);
+                            if (g == null) {
+                                g = new Group();
+                                g.Name = words[1];
+                                groups.Add(g);
+                                Console.WriteLine("Group: " + g.Name);
+                            }
                             currentGroup = g;
                         }
                         else {
@@ -232,6 +269,18 @@ namespace RayTracerLib
                             Console.WriteLine("line " + lineNo.ToString() + ":  Ill formed vertex normal");
                         }
                         break;
+                    case "mtllib":
+                        materials = new MTLFileParser(words[1]);
+                        break;
+                    case "usemtl":
+                        if (materials == null)
+                            currentMaterial = new Material();
+                        else {
+                            Material getm = materials.GetMaterial(words[1]);
+                            if (getm == null) currentMaterial = new Material();
+                            else currentMaterial = getm;
+                        }
+                            break;
                     case "vt": // texture vertex
                         // ignore this
                         // break;

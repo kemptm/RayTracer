@@ -1,4 +1,10 @@
-﻿using System;
+﻿///-------------------------------------------------------------------------------------------------
+// file:	Program.cs
+//
+// summary:	Implements the program class
+///-------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,24 +14,84 @@ using RayTracerLib;
 
 namespace DebugPlanes
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>   A program. </summary>
+    ///
+    /// <remarks>   Kemp, 1/18/2019. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+
     class Program
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   A test shape. </summary>
+        ///
+        /// <remarks>   Kemp, 1/18/2019. </remarks>
+        ///-------------------------------------------------------------------------------------------------
+
         protected class TestShape : Shape
         {
+            /// <summary>   The test ray. </summary>
             public Ray testRay;
+
+            ///-------------------------------------------------------------------------------------------------
+            /// <summary>   Local intersect (abstract). </summary>
+            ///
+            /// <remarks>   Kemp, 1/18/2019. </remarks>
+            ///
+            /// <param name="rayparm">  The ray to intersect. </param>
+            ///
+            /// <returns>   A List&lt;Intersection&gt; </returns>
+            ///-------------------------------------------------------------------------------------------------
+
             public override List<Intersection> LocalIntersect(Ray rayparm) {
                 testRay = rayparm;
                 return new List<Intersection>();
             }
+
+            ///-------------------------------------------------------------------------------------------------
+            /// <summary>   Calculate normal at a point in the local coordinate system of an RTShape. </summary>
+            ///
+            /// <remarks>   Kemp, 1/18/2019. </remarks>
+            ///
+            /// <param name="worldPoint">   The local point. </param>
+            ///
+            /// <returns>   A Vector. </returns>
+            ///-------------------------------------------------------------------------------------------------
+
             public override RayTracerLib.Vector LocalNormalAt(Point worldPoint) => new RayTracerLib.Vector(worldPoint.X, worldPoint.Y, worldPoint.Z);
+
+            ///-------------------------------------------------------------------------------------------------
+            /// <summary>   Copy the shape (Virtual). </summary>
+            ///
+            /// <remarks>   Kemp, 1/18/2019. </remarks>
+            ///
+            /// <returns>   A Shape. </returns>
+            ///-------------------------------------------------------------------------------------------------
+
             public override Shape Copy() {
                 throw new NotImplementedException();
             }
+
+            ///-------------------------------------------------------------------------------------------------
+            /// <summary>   Calculate bounds in  the local coordinate space (Abstract). </summary>
+            ///
+            /// <remarks>   Kemp, 1/18/2019. </remarks>
+            ///
+            /// <returns>   The Bounds. </returns>
+            ///-------------------------------------------------------------------------------------------------
 
             public override Bounds LocalBounds() {
                 throw new NotImplementedException();
             }
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Main entry-point for this application. </summary>
+        ///
+        /// <remarks>   Kemp, 1/18/2019. </remarks>
+        ///
+        /// <param name="args"> An array of command-line argument strings. </param>
+        ///-------------------------------------------------------------------------------------------------
 
         static void Main(string[] args) {
 
@@ -36,8 +102,8 @@ namespace DebugPlanes
             Sphere s1 = new Sphere();
             s1.Material = new Material();
             s1.Material.Color = new Color(0.8, 1.0, 0.6);
-            s1.Material.Diffuse = 0.7;
-            s1.Material.Specular = 0.2;
+            s1.Material.Diffuse = new Color(0.7, 0.7, 0.7);
+            s1.Material.Specular = new Color(0.2, 0.2, 0.2);
 
             Sphere s2 = new Sphere();
             s2.Transform = MatrixOps.CreateScalingTransform(0.5, 0.5, 0.5);
@@ -61,8 +127,8 @@ namespace DebugPlanes
                 Sphere s3 = new Sphere();
                 s3.Material = new Material();
                 s3.Material.Color = new Color(0.8, 1.0, 0.6);
-                s3.Material.Diffuse = 0.7;
-                s3.Material.Specular = 0.2;
+                s3.Material.Diffuse = new Color(0.7, 0.7, 0.7);
+                s3.Material.Specular = new Color(0.2, 0.2, 0.2);
                 w.AddObject(s3);
 
                 Plane p = new Plane();

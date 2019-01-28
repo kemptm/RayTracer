@@ -165,6 +165,7 @@ namespace RayTracerLib
         public Canvas Render(Camera c) {
             Canvas image = new Canvas(c.Hsize, c.Vsize);
             for (int y = 0; y < c.Vsize; y++) {
+                //if (y % 10 == 0) Console.WriteLine("Rendering line " + y.ToString());
                 for (int x = 0; x < c.Hsize; x++) {
                     Ray ray = c.RayForPixel((uint)x, (uint)y);
                     Color color = ColorAt(ray);
@@ -193,7 +194,7 @@ namespace RayTracerLib
                     Ray ray = c.RayForPixel((uint)x, (uint)y);
                     Color color = ColorAt(ray);
                     image.WritePixel((uint)x, (uint)y, color);
-                }
+               }
                 Console.WriteLine("Rendering row: {0} is done.", y);
             });
             return image;

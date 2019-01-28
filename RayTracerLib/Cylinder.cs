@@ -181,7 +181,7 @@ namespace RayTracerLib
                 t1 = t0;
                 t0 = temp;
             }
-            /// calculate the y intercepts of the ray and cone.
+            /// calculate the y intercepts of the ray and cylinder.
             double y0 = rayparm.Origin.Y + t0 * rayparm.Direction.Y;
             if ((minY < y0) && (maxY > y0)) xs.Add(new Intersection(t0, this));
 

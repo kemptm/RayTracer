@@ -1,4 +1,10 @@
-﻿using System;
+﻿///-------------------------------------------------------------------------------------------------
+// file:	Program.cs
+//
+// summary:	Implements the program class
+///-------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +15,22 @@ using RayTracerLib;
 
 namespace CubeDemo2
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>   A program. </summary>
+    ///
+    /// <remarks>   Kemp, 1/18/2019. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+
     class Program
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Main entry-point for this application. </summary>
+        ///
+        /// <remarks>   Kemp, 1/18/2019. </remarks>
+        ///
+        /// <param name="args"> An array of command-line argument strings. </param>
+        ///-------------------------------------------------------------------------------------------------
+
         static void Main(string[] args) {
             World w = new World();
             Group g = new Group();
@@ -29,7 +49,7 @@ namespace CubeDemo2
             */
             Cube box1 = new Cube();
             box1.Material.Color = new Color(1, 1, 1);
-            box1.Material.Ambient = 0.3;
+            box1.Material.Ambient = new Color(0.3, 0.3, 0.3);
             //box1.Transform = (Matrix)(RTMatrixOps.Translation(9, 1, 4) * RTMatrixOps.RotationY(Math.PI / 4));
             g.AddObject(box1);
             Group gbbc = BoundingBox.Generate(box1);
@@ -54,10 +74,12 @@ namespace CubeDemo2
             g.AddObject(cone);
             */
             w.AddObject(g);
-            Group gbb = BoundingBox.Generate(g);
+            LineSegment.LineFatness = (1000 * Ops.EPSILON);
+
+            Group gbb = BoundingBox.Generate(g, new Color(1,0,0));
             //w.AddObject(gbb);
             
-            Camera camera = new Camera(400, 400, Math.PI / 3);
+            Camera camera = new Camera(800, 800, Math.PI / 3);
             //            camera.Transform = RTMatrixOps.ViewTransform(new RTPoint(8, 5, 8), new RTPoint(0, 0, 0), new RTVector(0, 1, 0));
             int nmin = 0;
             int nmax = 10;
@@ -80,16 +102,20 @@ namespace CubeDemo2
                 //camera.Transform = RTMatrixOps.ViewTransform(new RTPoint(Math.Sin(theta) * 5, 5, -Math.Cos(theta) * 5), new RTPoint(0, 0, 0), new RTVector(0, 1, 0));
                 box1.Transform = (Matrix)(MatrixOps.CreateRotationYTransform(theta)* MatrixOps.CreateRotationZTransform(theta/2));
                 g.RemoveObject(gbbc);
-                gbbc = BoundingBox.Generate(box1);
+                gbbc = BoundingBox.Generate(box1, new Color(1,0,0));
                 g.AddObject(gbbc);
 
                 camera.Transform = MatrixOps.CreateViewTransform(new Point(5, 5, -5), new Point(0, 0, 0), new RayTracerLib.Vector(0, 1, 0));
                 Console.WriteLine(n.ToString() + " " + theta.ToString() + " (" + (10 * Math.Sin(theta)).ToString() + ", 10, " + (-Math.Cos(theta) * 12).ToString() + ")");
                 Canvas image = w.Render(camera);
 
-                String ppm = image.ToPPM();
+                /*{
+                    String ppm = image.ToPPM();
 
-                System.IO.File.WriteAllText(@"ToPPMa" + n.ToString() + ".ppm", ppm);
+                    System.IO.File.WriteAllText(@"ToPPMa" + n.ToString() + ".ppm", ppm);
+                }*/
+
+                image.WritePNG("ToPNG" + n.ToString()+ ".png");
             }
 
             Console.Write("Press Enter to finish ... ");

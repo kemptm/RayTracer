@@ -168,8 +168,8 @@ namespace RayTracerTest
             Sphere s1 = new Sphere();
             s1.Material = new Material();
             s1.Material.Color = new Color(0.8, 1.0, 0.6);
-            s1.Material.Diffuse = 0.7;
-            s1.Material.Specular = 0.2;
+            s1.Material.Diffuse = new Color(0.7, 0.7, 0.7);
+            s1.Material.Specular = new Color(0.2, 0.2, 0.2);
 
             Sphere s2 = new Sphere();
             s2.Transform = MatrixOps.CreateScalingTransform(0.5, 0.5, 0.5);
@@ -223,7 +223,7 @@ namespace RayTracerTest
             World world = defaultWorld.Copy();
             Ray ray = new Ray(new Point(0, 0, 0), new RayTracerLib.Vector(0, 0, 1));
             Shape s1 = new Sphere();
-            s1.Material.Ambient = 1;
+            s1.Material.Ambient = new Color(1, 1, 1);
             Intersection hit = new Intersection(1, s1);
             List<Intersection> xs = new List<Intersection>();
             xs.Add(hit);

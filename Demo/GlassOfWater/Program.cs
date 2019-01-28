@@ -57,7 +57,7 @@ namespace GlassOfWater
 
             Cylinder glass = new Cylinder();
             glass.Material.Color = new Color(0, 0, 0);
-            glass.Material.Ambient = 0.0;
+            glass.Material.Ambient = new Color(0, 0, 0);
             glass.Material.Transparency = 1;
             glass.Material.Reflective = 0.5;
             glass.Material.RefractiveIndex = 1.52;
@@ -69,7 +69,7 @@ namespace GlassOfWater
             
             Cylinder air = new Cylinder();
             air.Material.Color = new Color(0, 0, 0);
-            air.Material.Ambient = 0.0;
+            air.Material.Ambient = new Color(0, 0, 0);
             air.Material.Transparency = 1;
             air.Material.Reflective = 0.5;
             air.Material.RefractiveIndex = 1;
@@ -81,7 +81,7 @@ namespace GlassOfWater
             
             Cylinder water = new Cylinder();
             water.Material.Color = new Color(0, 0, 0.2);
-            water.Material.Ambient = 0.0;
+            water.Material.Ambient = new Color(0, 0, 0);
             water.Material.Transparency = 1;
             water.Material.Reflective = 0.5;
             water.Material.RefractiveIndex = 1.333;
@@ -138,11 +138,14 @@ namespace GlassOfWater
 
                 camera.Transform = MatrixOps.CreateViewTransform(new Point(12 * Math.Sin(theta) +9, 12* Math.Sin(theta) +0.5, -12* Math.Cos(theta) - 9), new Point(9, 3, -9), new RayTracerLib.Vector(0, 1, 0));
 
-                Canvas image = w.Render(camera);
-
+                Canvas image = w.ParallelRender(camera);
+                /*
                 String ppm = image.ToPPM();
 
                 System.IO.File.WriteAllText(@"ToPPMa" + n.ToString() + ".ppm", ppm);
+                */
+                image.WritePNG("ToPNG" + n.ToString() + ".png");
+
             }
 
             Console.Write("Press Enter to finish ... ");

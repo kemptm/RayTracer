@@ -20,12 +20,14 @@ namespace RayTracerLib
     ///             shapes out of a collection of shapes.</remarks>
     ///-------------------------------------------------------------------------------------------------
 
-    public class Group : Shape {
+    public class Group : Shape
+    {
         /// <summary>   The children; the subordinate shapes of this collection </summary>
         protected List<Shape> children;
         /// <summary>   The name of the group (usually ""). </summary>
         protected string name;
-
+        /// <summary>   The bounds of the group in local space. </summary>
+        protected Bounds localBounds;
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets or sets the children. </summary>
         ///
@@ -61,11 +63,32 @@ namespace RayTracerLib
         ///-------------------------------------------------------------------------------------------------
 
         public void AddObject(Shape o) {
+            Matrix identity = DenseMatrix.OfArray(new double[,] { { 1, 0, 0, 0 }, { 0, 1, 0, 0 }, { 0, 0, 1, 0 }, { 0, 0, 0, 1 } });
             /// Add the child.
             children.Add(o);
             o.Parent = this;
-            /// Recalculate the bounds of this group.
-            BoundsCalc();
+            /// If this is the first item in the group, calculate the bounds from scratch.
+            if (children.Count == 1) {
+                localBounds = o.Bounds.Copy();
+            }
+            /// If there are already items in the group, recalculate the bounds of this group. Since we're adding a child object, we only need to see whether
+            /// the position of the object extends the current bounds, rather than completely recomputing the bounds.
+            else {
+                /// Apply group transform to new item to calculate new group bounds
+
+                if (o.Bounds.MinCorner.X < localBounds.MinCorner.X) localBounds.MinCorner.X = o.Bounds.MinCorner.X;
+                if (o.Bounds.MinCorner.Y < localBounds.MinCorner.Y) localBounds.MinCorner.Y = o.Bounds.MinCorner.Y;
+                if (o.Bounds.MinCorner.Z < localBounds.MinCorner.Z) localBounds.MinCorner.Z = o.Bounds.MinCorner.Z;
+                if (o.Bounds.MaxCorner.X > localBounds.MaxCorner.X) localBounds.MaxCorner.X = o.Bounds.MaxCorner.X;
+                if (o.Bounds.MaxCorner.Y > localBounds.MaxCorner.Y) localBounds.MaxCorner.Y = o.Bounds.MaxCorner.Y;
+                if (o.Bounds.MaxCorner.Z > localBounds.MaxCorner.Z) localBounds.MaxCorner.Z = o.Bounds.MaxCorner.Z;
+            }
+            if (Transform.Equals(identity)) {
+                bounds = localBounds;
+            }
+            else {
+                BoundsCalc();
+            }
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -98,7 +121,7 @@ namespace RayTracerLib
                 g.AddObject(c.Copy());
             }
             g.material = material.Copy();
-            g.Transform = (Matrix) Transform.Clone();
+            g.Transform = (Matrix)Transform.Clone();
             g.bounds = bounds.Copy();
             return g;
         }
@@ -115,7 +138,7 @@ namespace RayTracerLib
 
         public override List<Intersection> LocalIntersect(Ray rayparm) {
             List<Intersection> xs = new List<Intersection>();
-            foreach(Shape s in children) {
+            foreach (Shape s in children) {
                 xs.AddRange(s.Intersect(rayparm));
             }
             xs.Sort((x, y) => x.T < y.T ? -1 : x.T > y.T ? 1 : 0);
@@ -137,19 +160,19 @@ namespace RayTracerLib
         }
 
         ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Calculate bounds in  the local coordinate space (Abstract). </summary>
+        /// <summary>   Calculate bounds in  the local coordinate space. </summary>
         ///
         /// <remarks>   Kemp, 11/9/2018. </remarks>
         ///
         /// <returns>   The Bounds. </returns>
         ///-------------------------------------------------------------------------------------------------
 
-        public override Bounds LocalBounds() {
+        public Bounds CalcLocalBounds() {
             if (children == null || children.Count == 0) return new Bounds(new Point(0, 0, 0), new Point(0, 0, 0));
 
             Bounds b = new Bounds(new Point(double.MaxValue, double.MaxValue, double.MaxValue), new Point(-double.MaxValue, -double.MaxValue, -double.MaxValue));
 
-            foreach(Shape c in children) {
+            foreach (Shape c in children) {
                 if (c.Bounds.MinCorner.X < b.MinCorner.X) b.MinCorner.X = c.Bounds.MinCorner.X;
                 if (c.Bounds.MinCorner.Y < b.MinCorner.Y) b.MinCorner.Y = c.Bounds.MinCorner.Y;
                 if (c.Bounds.MinCorner.Z < b.MinCorner.Z) b.MinCorner.Z = c.Bounds.MinCorner.Z;
@@ -159,6 +182,21 @@ namespace RayTracerLib
             }
             return b;
 
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Return pre-calculated bounds in  the local coordinate space (Abstract). </summary>
+        ///
+        /// <remarks>   Kemp, 1/4/2019. </remarks>
+        ///
+        /// <returns>   The Bounds. </returns>
+        ///-------------------------------------------------------------------------------------------------
+
+        public override Bounds LocalBounds() {
+            if (localBounds == null) {
+                localBounds = CalcLocalBounds();
+            }
+            return localBounds.Copy();
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -172,7 +210,7 @@ namespace RayTracerLib
         ///-------------------------------------------------------------------------------------------------
 
         public override bool Includes(Shape x) {
-            foreach(Shape s in children) {
+            foreach (Shape s in children) {
                 if (s is CSG || s is Group) {
                     if (s.Includes(x)) return true;
                 }

@@ -20,6 +20,14 @@ namespace RayTracerLib
     public class Material
     {
         ///-------------------------------------------------------------------------------------------------
+        /// <summary>   The name. </summary>
+        /// 
+        /// <remarks>
+        ///     This is the name of the material as defined by an entry in the MTL file.
+        /// </remarks>
+        ///-------------------------------------------------------------------------------------------------
+        protected string name;
+        ///-------------------------------------------------------------------------------------------------
         /// <summary>   The color. </summary>
         ///
         /// <remarks>
@@ -40,7 +48,7 @@ namespace RayTracerLib
         /// </remarks>
         ///-------------------------------------------------------------------------------------------------
 
-        protected double ambient;
+        protected Color ambient;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   The diffuse. </summary>
@@ -51,7 +59,7 @@ namespace RayTracerLib
         /// </remarks>
         ///-------------------------------------------------------------------------------------------------
 
-        protected double diffuse;
+        protected Color diffuse;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   The specular. </summary>
@@ -62,7 +70,7 @@ namespace RayTracerLib
         /// </remarks>
         ///-------------------------------------------------------------------------------------------------
 
-        protected double specular;
+        protected Color specular;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   The shininess. </summary>
@@ -120,6 +128,15 @@ namespace RayTracerLib
 
         protected Pattern pattern;
 
+        protected uint illuminationMode;
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Gets or sets the name. </summary>
+        ///
+        /// <value> The name. </value>
+        ///-------------------------------------------------------------------------------------------------
+
+        public String Name { get { return name; } set { name = value; } }
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets or sets the color attribute. </summary>
         ///
@@ -134,7 +151,7 @@ namespace RayTracerLib
         /// <value> The ambient. </value>
         ///-------------------------------------------------------------------------------------------------
 
-        public double Ambient { get { return ambient; } set { ambient = value; } }
+        public Color Ambient { get { return ambient; } set { ambient = value; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets or sets the diffuse attribute. </summary>
@@ -142,7 +159,7 @@ namespace RayTracerLib
         /// <value> The diffuse. </value>
         ///-------------------------------------------------------------------------------------------------
 
-        public double Diffuse { get { return diffuse; } set { diffuse = value; } }
+        public Color Diffuse { get { return diffuse; } set { diffuse = value; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets or sets the specular attribute. </summary>
@@ -150,7 +167,7 @@ namespace RayTracerLib
         /// <value> The specular. </value>
         ///-------------------------------------------------------------------------------------------------
 
-        public double Specular { get { return specular; } set { specular = value; } }
+        public Color Specular { get { return specular; } set { specular = value; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets or sets the shininess attribute. </summary>
@@ -192,6 +209,8 @@ namespace RayTracerLib
 
         public double RefractiveIndex { get { return refractiveIndex; } set { refractiveIndex = value; } }
 
+        public uint IlluminationMode { get { return illuminationMode; } set { illuminationMode = value; } }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Default constructor. </summary>
         ///
@@ -199,14 +218,34 @@ namespace RayTracerLib
         ///-------------------------------------------------------------------------------------------------
 
         public Material() {
+            InitializeMaterial();
+        }
+
+        protected void InitializeMaterial() { 
+            name = "";
             color = new Color(1, 1, 1);
-            ambient = 0.1;
-            diffuse = 0.9;
-            specular = 0.9;
+            //color = new Color(0, 0, 0);
+            ambient = new Color(0.1, 0.1, 0.1);
+            diffuse = new Color(0.9, 0.9, 0.9);
+            specular = new Color(0.9, 0.9, 0.9);
             shininess = 200;
             reflective = 0;
             transparency = 0;
             refractiveIndex = 1;
+            illuminationMode = 2;
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Constructor. </summary>
+        ///
+        /// <remarks>   Kemp, 1/17/2019. </remarks>
+        ///
+        /// <param name="n">    A string to process. </param>
+        ///-------------------------------------------------------------------------------------------------
+
+        public Material(string n) {
+            InitializeMaterial();
+            name = n;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -221,16 +260,13 @@ namespace RayTracerLib
         /// <param name="sc">   The shininess attribute. </param>
         ///-------------------------------------------------------------------------------------------------
 
-        public Material(Color c, double a, double d, double sp, double sc) {
+        public Material(Color c, Color a, Color d, Color sp, double sc) {
+            InitializeMaterial();
             color = new Color(c.Red,c.Green,c.Blue);
             ambient = a;
             diffuse = d;
             specular = sp;
             shininess = sc;
-            reflective = 0;
-            transparency = 0;
-            refractiveIndex = 1;
-
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -246,16 +282,14 @@ namespace RayTracerLib
         /// <param name="sc">   The shininess attribute. </param>
         ///-------------------------------------------------------------------------------------------------
 
-        public Material(Pattern p,Color c, double a, double d, double sp, double sc) {
+        public Material(Pattern p,Color c, Color a, Color d, Color sp, double sc) {
+            InitializeMaterial();
             if (pattern != null) pattern = p.Copy();
             color = new Color(c.Red, c.Green, c.Blue);
             ambient = a;
             diffuse = d;
             specular = sp;
             shininess = sc;
-            reflective = 0;
-            transparency = 0;
-            refractiveIndex = 1;
 
         }
 
@@ -275,7 +309,9 @@ namespace RayTracerLib
         /// <param name="ri">   The refractiveIndex attribute. </param>
         ///-------------------------------------------------------------------------------------------------
 
-        public Material(Pattern p, Color c, double a, double d, double sp, double sc, double re, double tr, double ri) {
+        public Material(string n, Pattern p, Color c, Color a, Color d, Color sp, double sc, double re, double tr, double ri) {
+            InitializeMaterial();
+            name = n;
             if (p != null) pattern = p.Copy();
             color = new Color(c.Red, c.Green, c.Blue);
             ambient = a;
@@ -285,7 +321,6 @@ namespace RayTracerLib
             reflective = re;
             transparency = tr;
             refractiveIndex = ri;
-
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -299,8 +334,9 @@ namespace RayTracerLib
         ///-------------------------------------------------------------------------------------------------
 
         public bool Equals(Material m) {
-            return (ambient == m.ambient) && (diffuse == m.diffuse) && (specular == m.specular) && (shininess == m.shininess) &&
-            color.Equals(m.color) && ((pattern == null && m.pattern == null) || (pattern != null && m.pattern != null && pattern.Equals(m.pattern))) && (transparency == m.transparency) && (refractiveIndex == m.refractiveIndex);
+            return (name == m.name) && (ambient.Equals(m.ambient)) && (diffuse.Equals(m.diffuse)) && (specular.Equals(m.specular)) && (shininess == m.shininess) &&
+            color.Equals(m.color) && ((pattern == null && m.pattern == null) || (pattern != null && m.pattern != null && pattern.Equals(m.pattern))) && 
+            (transparency == m.transparency) && (refractiveIndex == m.refractiveIndex) && (illuminationMode==m.illuminationMode);
            
         }
 
@@ -312,7 +348,7 @@ namespace RayTracerLib
         /// <returns>   A Material. </returns>
         ///-------------------------------------------------------------------------------------------------
 
-        public Material Copy() => new Material(pattern, color, ambient, diffuse, specular, shininess, reflective, transparency, refractiveIndex);
+        public Material Copy() => new Material(name, pattern, color, ambient, diffuse, specular, shininess, reflective, transparency, refractiveIndex);
       
 
      }

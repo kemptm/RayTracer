@@ -82,10 +82,13 @@ namespace Hexagon
             Canvas image = w.Render(camera);
             Console.WriteLine("Now writing output ...");
 
+            /*
             String ppm = image.ToPPM();
             String ppmname = ("ToPPM.ppm");
             System.IO.File.WriteAllText(@ppmname, ppm);
+            */
 
+            image.WritePNG("Hexagon.png");
             Console.Write("Press Enter to finish ... ");
             Console.Read();
 

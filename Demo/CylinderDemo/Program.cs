@@ -1,4 +1,10 @@
-﻿using System;
+﻿///-------------------------------------------------------------------------------------------------
+// file:	Program.cs
+//
+// summary:	Implements the main program
+///-------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,10 +13,24 @@ using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 using RayTracerLib;
 
-namespace CylinderDEmo
+namespace CylinderDemo
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>   The Main Program. </summary>
+    ///
+    /// <remarks>   Kemp, 1/18/2019. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+
     class Program
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Main entry-point for this application. </summary>
+        ///
+        /// <remarks>   Kemp, 1/18/2019. </remarks>
+        ///
+        /// <param name="args"> An array of command-line argument strings. </param>
+        ///-------------------------------------------------------------------------------------------------
+
         static void Main(string[] args) {
             World w = new World();
             Group g = new Group();
@@ -29,7 +49,7 @@ namespace CylinderDEmo
             */
             Cylinder cyl = new Cylinder();
             cyl.Material.Color = new Color(1, 1, 1);
-            cyl.Material.Ambient = 0.3;
+            cyl.Material.Ambient = new Color(0.3, 0.3, 0.3);
             cyl.MinY = -1;
             cyl.MaxY = 1;
             //box1.Transform = (Matrix)(RTMatrixOps.Translation(9, 1, 4) * RTMatrixOps.RotationY(Math.PI / 4));

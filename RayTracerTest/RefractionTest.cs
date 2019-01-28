@@ -178,8 +178,8 @@ namespace RayTracerTest
             Sphere s1 = new Sphere();
             s1.Material = new Material();
             s1.Material.Color = new Color(0.8, 1.0, 0.6);
-            s1.Material.Diffuse = 0.7;
-            s1.Material.Specular = 0.2;
+            s1.Material.Diffuse = new Color(0.7, 0.7, 0.7);
+            s1.Material.Specular = new Color(0.2, 0.2, 0.2);
 
             Sphere s2 = new Sphere();
             s2.Transform = MatrixOps.CreateScalingTransform(0.5, 0.5, 0.5);
@@ -195,9 +195,9 @@ namespace RayTracerTest
 
             GlassSphere s3 = new GlassSphere();
             s3.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, 3, 0) *  MatrixOps.CreateScalingTransform(2, 2, 2));
-            s3.Material.Ambient = 0;
+            s3.Material.Ambient = new Color(0, 0, 0);
             s3.Material.Color = new Color(0, 0, 0);
-            s3.Material.Specular = 0;
+            s3.Material.Specular = new Color(0, 0, 0);
             refractTest.AddObject(s3);
         }
         //
@@ -365,7 +365,7 @@ namespace RayTracerTest
         public void RefractedColor() {
             World world = defaultWorld.Copy();
             Shape a = world.Objects[0];
-            a.Material.Ambient = 1;
+            a.Material.Ambient = new Color(1, 1, 1);
             a.Material.Pattern = new TestPattern();
             Shape b = world.Objects[1];
             b.Material.Transparency = 1;
@@ -402,7 +402,7 @@ namespace RayTracerTest
 
             Sphere ball = new Sphere();
             ball.Material.Color = new Color(1, 0, 0);
-            ball.Material.Ambient = 0.5;
+            ball.Material.Ambient = new Color(0.5, 0.5, 0.5);
             ball.Transform = MatrixOps.CreateTranslationTransform(0, -3.5, -0.5);
             world.AddObject(ball);
 
@@ -531,7 +531,7 @@ namespace RayTracerTest
 
             Sphere ball = new Sphere();
             ball.Material.Color = new Color(1, 0, 0);
-            ball.Material.Ambient = 0.5;
+            ball.Material.Ambient = new Color(0.5, 0.5, 0.5);
             ball.Transform = MatrixOps.CreateTranslationTransform(0, -3.5, -0.5);
             w.AddObject(ball);
 

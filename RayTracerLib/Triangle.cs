@@ -29,9 +29,11 @@ namespace RayTracerLib
         protected Point v1;
         /// <summary>   The vertex v2. </summary>
         protected Point v2;
-
+        /// <summary>   The vector e0. </summary>
         protected Vector e0;
+        /// <summary>   The vectir e1. </summary>
         protected Vector e1;
+        /// <summary>   The normal. </summary>
         protected Vector normal;
 
 

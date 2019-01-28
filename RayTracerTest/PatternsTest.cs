@@ -251,9 +251,9 @@ namespace RayTracerTest
         public void LightingWithAPattern() {
             Material m = new Material {
                 Pattern = new StripePattern(white, black),
-                Ambient = 1,
-                Diffuse = 0,
-                Specular = 0
+                Ambient = new Color(1, 1, 1),
+                Diffuse = new Color(0, 0, 0),
+                Specular = new Color(0, 0, 0)
             };
             RayTracerLib.Vector eyev = new RayTracerLib.Vector(0, 0, -1);
             RayTracerLib.Vector normalv = new RayTracerLib.Vector(0, 0, -1);

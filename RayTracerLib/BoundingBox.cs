@@ -47,97 +47,101 @@ namespace RayTracerLib
             if (cc == null) c = new Color(1, 1, 1);
             else c = cc;
 
+            Material m = new Material("Bounding Box");
+            m.Color = c;
+            m.Ambient = new Color(1, 1, 1); // glows in the dark.
+
             Point minbb = s.Bounds.MinCorner;
             Point maxbb = s.Bounds.MaxCorner;
 
-             LineSegment ls = new LineSegment();
+            Cylinder ls = new Cylinder();
             /// Create 4 segments in y direction from x and z min maxes
             {
-                ls.PLo = minbb.Y;
-                ls.PHi = maxbb.Y;
+                ls.MinY = minbb.Y;
+                ls.MaxY = maxbb.Y;
                 ls.Transform = MatrixOps.CreateTranslationTransform(minbb.X, 0, minbb.Z);
-                ls.Material.Color = c.Copy();
+                ls.Material = m;
                 g.AddObject(ls);
 
-                ls = new LineSegment();
-                ls.PLo = minbb.Y;
-                ls.PHi = maxbb.Y;
+                ls = new Cylinder();
+                ls.MinY = minbb.Y;
+                ls.MaxY = maxbb.Y;
                 ls.Transform = MatrixOps.CreateTranslationTransform(minbb.X, 0, maxbb.Z);
-                ls.Material.Color = c.Copy();
+                ls.Material = m;
                 g.AddObject(ls);
 
-                ls = new LineSegment();
-                ls.PLo = minbb.Y;
-                ls.PHi = maxbb.Y;
+                ls = new Cylinder();
+                ls.MinY = minbb.Y;
+                ls.MaxY = maxbb.Y;
                 ls.Transform = MatrixOps.CreateTranslationTransform(maxbb.X, 0, minbb.Z);
-                ls.Material.Color = c.Copy();
+                ls.Material = m;
                 g.AddObject(ls);
 
-                ls = new LineSegment();
-                ls.PLo = minbb.Y;
-                ls.PHi = maxbb.Y;
+                ls = new Cylinder();
+                ls.MinY = minbb.Y;
+                ls.MaxY = maxbb.Y;
                 ls.Transform = MatrixOps.CreateTranslationTransform(maxbb.X, 0, maxbb.Z);
-                ls.Material.Color = c.Copy();
+                ls.Material = m;
                 g.AddObject(ls);
             }
             /// Create 4 segments in x direction from y and z min maxes
             {
-                ls = new LineSegment();
-                ls.PLo = minbb.X;
-                ls.PHi = maxbb.X;
+                ls = new Cylinder();
+                ls.MinY = minbb.X;
+                ls.MaxY = maxbb.X;
                 ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, minbb.Y, minbb.Z) * MatrixOps.CreateRotationZTransform(-Math.PI / 2));
-                ls.Material.Color = c.Copy();
+                ls.Material = m;
                 g.AddObject(ls);
 
-                ls = new LineSegment();
-                ls.PLo = minbb.X;
-                ls.PHi = maxbb.X;
+                ls = new Cylinder();
+                ls.MinY = minbb.X;
+                ls.MaxY = maxbb.X;
                 ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, minbb.Y, maxbb.Z) * MatrixOps.CreateRotationZTransform(-Math.PI / 2));
-                ls.Material.Color = c.Copy();
+                ls.Material = m;
                 g.AddObject(ls);
 
-                ls = new LineSegment();
-                ls.PLo = minbb.X;
-                ls.PHi = maxbb.X;
+                ls = new Cylinder();
+                ls.MinY = minbb.X;
+                ls.MaxY = maxbb.X;
                 ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, maxbb.Y, minbb.Z) * MatrixOps.CreateRotationZTransform(-Math.PI / 2));
-                ls.Material.Color = c.Copy();
+                ls.Material = m;
                 g.AddObject(ls);
 
-                ls = new LineSegment();
-                ls.PLo = minbb.X;
-                ls.PHi = maxbb.X;
+                ls = new Cylinder();
+                ls.MinY = minbb.X;
+                ls.MaxY = maxbb.X;
                 ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, maxbb.Y, maxbb.Z) * MatrixOps.CreateRotationZTransform(-Math.PI / 2));
-                ls.Material.Color = c.Copy();
+                ls.Material = m;
                 g.AddObject(ls);
             }
             /// Create 4 segments in the z direction and run from min to max in x and y
             {
-                ls = new LineSegment();
-                ls.PLo = minbb.Z;
-                ls.PHi = maxbb.Z;
+                ls = new Cylinder();
+                ls.MinY = minbb.Z;
+                ls.MaxY = maxbb.Z;
                 ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(minbb.X, minbb.Y, 0) * MatrixOps.CreateRotationXTransform(Math.PI / 2));
-                ls.Material.Color = c.Copy();
+                ls.Material = m;
                 g.AddObject(ls);
 
-                ls = new LineSegment();
-                ls.PLo = minbb.Z;
-                ls.PHi = maxbb.Z;
+                ls = new Cylinder();
+                ls.MinY = minbb.Z;
+                ls.MaxY = maxbb.Z;
                 ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(minbb.X, maxbb.Y, 0) * MatrixOps.CreateRotationXTransform(Math.PI / 2));
-                ls.Material.Color = c.Copy();
+                ls.Material = m;
                 g.AddObject(ls);
 
-                ls = new LineSegment();
-                ls.PLo = minbb.Z;
-                ls.PHi = maxbb.Z;
+                ls = new Cylinder();
+                ls.MinY = minbb.Z;
+                ls.MaxY = maxbb.Z;
                 ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(maxbb.X, minbb.Y, 0) * MatrixOps.CreateRotationXTransform(Math.PI / 2));
-                ls.Material.Color = c.Copy();
+                ls.Material = m;
                 g.AddObject(ls);
 
-                ls = new LineSegment();
-                ls.PLo = minbb.Z;
-                ls.PHi = maxbb.Z;
+                ls = new Cylinder();
+                ls.MinY = minbb.Z;
+                ls.MaxY = maxbb.Z;
                 ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(maxbb.X, maxbb.Y, 0) * MatrixOps.CreateRotationXTransform(Math.PI / 2));
-                ls.Material.Color = c.Copy();
+                ls.Material = m;
                 g.AddObject(ls);
             }
             /// Return the created group.

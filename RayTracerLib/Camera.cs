@@ -103,13 +103,13 @@ namespace RayTracerLib
         ///
         /// <param name="h">    canvas horizontal size in pixels. </param>
         /// <param name="v">    canvas vertical size in pixels. </param>
-        /// <param name="f">    Field-of-View in radians. </param>
+        /// <param name="fov">    Field-of-View in radians. </param>
         ///-------------------------------------------------------------------------------------------------
 
-        public Camera(uint h, uint v, double f) {
+        public Camera(uint h, uint v, double fov) {
             hsize = h;
             vsize = v;
-            fieldOfView = f;
+            fieldOfView = fov;
             transform = DenseMatrix.CreateIdentity(4);
             pixelSize = CalcPixelSize();
         }

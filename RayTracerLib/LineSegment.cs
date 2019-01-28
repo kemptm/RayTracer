@@ -81,7 +81,7 @@ namespace RayTracerLib
             pHi = double.MaxValue;
             direction = new Vector(0, 1, 0);
             origin = new Point(0, -1, 0);
-            Material.Ambient = 1;
+            Material.Ambient = new Color(1, 1, 1);
             bounds = LocalBounds();
         }
 
@@ -98,7 +98,7 @@ namespace RayTracerLib
             pLo = pt1;
             pHi = pt2;
             direction = new Vector(0, 1, 0);
-            Material.Ambient = 1;
+            Material.Ambient = new Color(1, 1, 1);
             origin = new Point(0, -1, 0);
             bounds = LocalBounds();
         }

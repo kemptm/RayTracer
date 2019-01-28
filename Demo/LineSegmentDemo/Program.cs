@@ -1,4 +1,10 @@
-﻿using System;
+﻿///-------------------------------------------------------------------------------------------------
+// file:	Program.cs
+//
+// summary:	Implements the program class
+///-------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,8 +15,22 @@ using RayTracerLib;
 
 namespace LineSegmentDemo
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>   A program. </summary>
+    ///
+    /// <remarks>   Kemp, 1/18/2019. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+
     class Program
     {
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Main entry-point for this application. </summary>
+        ///
+        /// <remarks>   Kemp, 1/18/2019. </remarks>
+        ///
+        /// <param name="args"> An array of command-line argument strings. </param>
+        ///-------------------------------------------------------------------------------------------------
+
         static void Main(string[] args) {
             World w = new World();
             w.AddLight(new LightPoint(new Point(-10, 15, -10), new Color(1, 1, 1)));
@@ -58,7 +78,7 @@ namespace LineSegmentDemo
             double cy = 0;
             double cz = -5;
             double cmult = 4;
-            double croty = 0;
+            //double croty = 0;
             double crotz = 0;
             Point cameraPoint = new Point(0, cy * cmult, cz * cmult);
             for (int n = 3; n < 4; n++) {

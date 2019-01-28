@@ -44,7 +44,6 @@ namespace RayTracerLib
         ///-------------------------------------------------------------------------------------------------
 
         public double Blue { get { return Z; } set { Z = value; } }
-        // public double W { get { return W; } set { W = value; } }
 
         const double colorMin = 0.0;
         const double colorMax = 1.0;

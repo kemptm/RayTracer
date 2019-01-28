@@ -101,8 +101,8 @@ namespace RayTracerTest
             Sphere s1 = new Sphere();
             s1.Material = new Material();
             s1.Material.Color = new Color(0.8, 1.0, 0.6);
-            s1.Material.Diffuse = 0.7;
-            s1.Material.Specular = 0.2;
+            s1.Material.Diffuse = new Color(0.7, 0.7, 0.7);
+            s1.Material.Specular = new Color(0.2, 0.2, 0.2);
 
             Sphere s2 = new Sphere();
             s2.Transform = MatrixOps.CreateScalingTransform(0.5, 0.5, 0.5);
@@ -141,8 +141,8 @@ namespace RayTracerTest
             Sphere s1 = new Sphere();
             s1.Material = new Material();
             s1.Material.Color = new Color(0.8, 1.0, 0.6);
-            s1.Material.Diffuse = 0.7;
-            s1.Material.Specular = 0.2;
+            s1.Material.Diffuse = new Color(0.7, 0.7, 0.7);
+            s1.Material.Specular = new Color(0.2, 0.2, 0.2);
 
             Sphere s2 = new Sphere();
             s2.Transform = MatrixOps.CreateScalingTransform(0.5, 0.5, 0.5);
@@ -151,7 +151,7 @@ namespace RayTracerTest
             Assert.IsTrue(defaultWorld.Lights[0].Intensity.Equals(light.Intensity));
 
             Sphere s1w = (Sphere)defaultWorld.Objects[0];
-            Assert.IsTrue((s1w.Material.Diffuse == s1.Material.Diffuse) && (s1w.Material.Specular == s1.Material.Specular) && s1w.Material.Color.Equals(s1.Material.Color));
+            Assert.IsTrue((s1w.Material.Diffuse.Equals(s1.Material.Diffuse)) && (s1w.Material.Specular.Equals(s1.Material.Specular)) && s1w.Material.Color.Equals(s1.Material.Color));
 
             Sphere s2w = (Sphere)defaultWorld.Objects[1];
             Assert.IsTrue(s2w.Transform.Equals(s2.Transform));
@@ -307,9 +307,9 @@ namespace RayTracerTest
         public void ColorAtBehindRay() {
             World world = defaultWorld;
             Shape outer = defaultWorld.Objects[0];
-            outer.Material.Ambient = 1;
+            outer.Material.Ambient = new Color(1, 1, 1);
             Shape inner = defaultWorld.Objects[1];
-            inner.Material.Ambient = 1;
+            inner.Material.Ambient = new Color(1, 1, 1);
             Ray ray = new Ray(new Point(0, 0, -0.75), new RayTracerLib.Vector(0, 0, 1));
             Assert.IsTrue(world.ColorAt(ray).Equals(inner.Material.Color));
             //Assert.IsTrue(world.ColorAt(ray).Clamp().Equals(inner.Material.Color));

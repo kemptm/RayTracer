@@ -190,7 +190,7 @@ namespace RayTracerTest
         public void AssigningAMaterial() {
             Shape s = new TestShape();
             Material m = new Material();
-            m.Ambient = 1;
+            m.Ambient = new Color(1, 1, 1);
             s.Material = m;
             Assert.IsTrue(s.Material.Equals(m));
         }

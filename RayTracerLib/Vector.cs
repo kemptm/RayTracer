@@ -182,7 +182,7 @@ namespace RayTracerLib
         public static Vector operator +(Vector v, Vector a) => v.Add(a);
 
         ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Multiply Vectory by scalar. </summary>
+        /// <summary>   Multiply Vector by scalar. </summary>
         ///
         /// <remarks>   Kemp, 11/9/2018. </remarks>
         ///
@@ -253,7 +253,7 @@ namespace RayTracerLib
         ///
         /// <remarks>   Kemp, 11/9/2018. </remarks>
         ///
-        /// <param name="a">    Vector to be negated. </param>
+        /// <param name="a">    Vector to be dotted. </param>
         ///
         /// <returns>   A double. </returns>
         ///-------------------------------------------------------------------------------------------------
@@ -265,7 +265,7 @@ namespace RayTracerLib
         ///
         /// <remarks>   Kemp, 11/9/2018. </remarks>
         ///
-        /// <param name="b">    A Vector to process. </param>
+        /// <param name="b">    A Vector to crossed. </param>
         ///
         /// <returns>   A Vector. </returns>
         ///-------------------------------------------------------------------------------------------------

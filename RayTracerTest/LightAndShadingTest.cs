@@ -223,9 +223,9 @@ namespace RayTracerTest
         public void MaterialDefault() {
             Material m = new Material();
             Assert.IsTrue(m.Color.Equals(new Color(1, 1, 1)));
-            Assert.IsTrue(m.Ambient == 0.1);
-            Assert.IsTrue(m.Diffuse == 0.9);
-            Assert.IsTrue(m.Specular == 0.9);
+            Assert.IsTrue(m.Ambient.Equals(new Color(0.1, 0.1, 0.1)));
+            Assert.IsTrue(m.Diffuse.Equals(new Color(0.9, 0.9, 0.9)));
+            Assert.IsTrue(m.Specular.Equals(new Color(0.9, 0.9, 0.9)));
             Assert.IsTrue(m.Shininess == 200);
         }
 
@@ -239,7 +239,9 @@ namespace RayTracerTest
         public void SphereDefaultMaterial() {
             Sphere s = new Sphere();
             Material m = s.Material;
-            Assert.IsTrue(m.Equals(new Material()));
+            Material m2 = new Material();
+            bool foo = m.Equals(m2);
+            Assert.IsTrue(m.Equals(m2));
         }
 
         ///-------------------------------------------------------------------------------------------------

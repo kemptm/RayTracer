@@ -20,7 +20,12 @@ namespace RayTracerLib
 
     public abstract class Ops
     {
+        ///-------------------------------------------------------------------------------------------------
         /// <summary>   The epsilon. </summary>
+        ///
+        /// <value> The 00001. </value>
+        ///-------------------------------------------------------------------------------------------------
+
         public const double EPSILON = 0.00001;
 
         ///-------------------------------------------------------------------------------------------------
@@ -79,7 +84,7 @@ namespace RayTracerLib
         }
 
         ///-------------------------------------------------------------------------------------------------
-        /// <summary>   Lighting. Calculate the color of a point on an object.</summary>
+        /// <summary>   Lighting. Calculate the color of a point on an object. </summary>
         ///
         /// <remarks>   Kemp, 11/9/2018. </remarks>
         ///
@@ -99,34 +104,48 @@ namespace RayTracerLib
             Color diffuse;
             Color specular;
             Color c;
+
+            /// If there is a pattern, start with its contribution.  This can include textures too.
             if (material.Pattern != null) c = material.Pattern.PatternAtObject(obj,worldPosition);
             else c = material.Color;
             Color effectiveColor = c * light.Intensity;
-
+            
+            /// Calculate the ambient contribution
             ambient = effectiveColor * material.Ambient;
+            /// if we're shadowed from the light, ambient is all there is, so return it.
             if (inShadow) return ambient;
 
             Color black = new Color(0, 0, 0);
+            // find the direction to the light source.
             Vector lightv = (light.Position - worldPosition).Normalize();
+
+            /// lightDotNormal represents the cosine of the angle between 
+            /// the light vector and the normal vector.  A negative number means the
+            /// light is on the other side of the surface. Ergo, no diffuse or specular contributions.
             double lightDotNormal = lightv.Dot(normalv);
             if (lightDotNormal < 0) {
                 diffuse = black;
                 specular = black;
             }
             else {
+                /// Compute the diffuse contribution
                 diffuse = effectiveColor * material.Diffuse * lightDotNormal;
-
+                
+                /// reflectDotEye represents the cosine of the angle between the
+                /// reflection vector and the eye vector.  a negative number means the
+                /// light reflects away from the eye.  Ergo, no specular contribution.
                 Vector reflectv = (-lightv).Reflect(normalv);
                 double reflectDotEye = Math.Pow(reflectv.Dot(eyev), material.Shininess);
                 if (reflectDotEye <= 0) {
                     specular = black;
                 }
                 else {
-                    specular = light.Intensity * (reflectDotEye * material.Specular);
+                    /// Compute the specular contribution
+                    specular = light.Intensity * (material.Specular * reflectDotEye);
                 }
             }
 
-
+            /// Combine the contributions to the color and return it.
             return ambient + diffuse + specular;
         }
 

@@ -5,6 +5,7 @@
 ///-------------------------------------------------------------------------------------------------
 
 using System;
+using System.Drawing;
 
 namespace RayTracerLib
 {
@@ -136,6 +137,36 @@ namespace RayTracerLib
             }
             sb.Append(nl);
             return sb.ToString();
+        }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Writes a PNG file of the canvas </summary>
+        ///
+        /// <remarks>   Kemp, 1/3/2019. </remarks>
+        ///
+        /// <param name="filename"> Filename of the file. </param>
+        ///-------------------------------------------------------------------------------------------------
+
+        public void WritePNG(string filename) {
+            double scale = 255.0;
+            Bitmap bm = new Bitmap((int) width,(int) height);
+            /// Convert the canvas to a System.Drawing.Bitmap.
+            for (int h = 0; h < height; h++) {
+                for (int w = 0; w < width; w++) {
+                    int r, g, b;
+                    if (Double.IsNaN(workspace[w, h].X)) {
+                        r = g = b = 0;
+                    }
+                    else {
+                        r = (int)Math.Max(Math.Min(workspace[w, h].X * scale, scale), 0.0);
+                        g = (int)Math.Max(Math.Min(workspace[w, h].Y * scale, scale), 0.0);
+                        b = (int)Math.Max(Math.Min(workspace[w, h].Z * scale, scale), 0.0);
+                    }
+                    bm.SetPixel(w, h, System.Drawing.Color.FromArgb(r,g,b));
+                }
+            }
+            /// Write the bitmap.
+            bm.Save(filename, System.Drawing.Imaging.ImageFormat.Png);
         }
     }
 }

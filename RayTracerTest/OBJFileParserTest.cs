@@ -201,9 +201,9 @@ namespace RayTracerTest
             Assert.IsTrue(t1.V0.Equals(p.Verticies[0]));
             Assert.IsTrue(t1.V1.Equals(p.Verticies[1]));
             Assert.IsTrue(t1.V2.Equals(p.Verticies[2]));
-            Assert.IsTrue(t1.N0.Equals(p.Normals[0]));
-            Assert.IsTrue(t1.N1.Equals(p.Normals[1]));
-            Assert.IsTrue(t1.N2.Equals(p.Normals[2]));
+            Assert.IsTrue(t1.N0.Equals(p.Normals[2]));
+            Assert.IsTrue(t1.N1.Equals(p.Normals[0]));
+            Assert.IsTrue(t1.N2.Equals(p.Normals[1]));
             Assert.IsTrue(t2.Equals(t1));
         }
     }

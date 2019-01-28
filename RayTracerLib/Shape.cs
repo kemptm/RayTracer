@@ -200,10 +200,11 @@ namespace RayTracerLib
         public Vector NormalAt(Point worldPoint, Intersection hit) {
             Point localp = WorldToObject(worldPoint);
             Vector localn;
-                        
-            if ( this is SmoothTriangle) {
+
+            if (this is SmoothTriangle) {
                 localn = LocalNormalAt(worldPoint, hit);
-            } else {
+            }
+            else {
                 localn = LocalNormalAt(localp);
             }
             return NormalToWorld(localn);
@@ -273,8 +274,12 @@ namespace RayTracerLib
         /// <returns>   True if it is included, false if not. </returns>
         ///-------------------------------------------------------------------------------------------------
 
-        public virtual bool Includes(Shape x ) {
+        public virtual bool Includes(Shape x) {
             return false;
-        } 
+        }
+
+        public Color Lighting(LightPoint light, Point worldPosition, Vector eyev, Vector normalv, bool inShadow = false) {
+            return new Color(0, 0, 0);
+        }
     }
 }
