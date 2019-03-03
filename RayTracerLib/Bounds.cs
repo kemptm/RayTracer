@@ -87,6 +87,9 @@ namespace RayTracerLib
         internal void Calc(Shape shape) {
             Bounds lb = shape.LocalBounds();
             List<Point> box = new List<Point>();
+            //lb.minCorner = lb.minCorner.Transform(shape.Transform);
+            //lb.maxCorner = lb.maxCorner.Transform(shape.Transform);
+
             box.Add(new Point(lb.minCorner.X, lb.minCorner.Y, lb.minCorner.Z).Transform(shape.Transform));
             box.Add(new Point(lb.minCorner.X, lb.minCorner.Y, lb.maxCorner.Z).Transform(shape.Transform));
             box.Add(new Point(lb.minCorner.X, lb.maxCorner.Y, lb.minCorner.Z).Transform(shape.Transform));
@@ -104,9 +107,10 @@ namespace RayTracerLib
                 maxCorner.X = Math.Max(maxCorner.X, v.X);
                 maxCorner.Y = Math.Max(maxCorner.Y, v.Y);
                 maxCorner.Z = Math.Max(maxCorner.Z, v.Z);
-                /*Console.WriteLine(v.X.ToString() + ", " + v.Y.ToString() + ", " + v.Z.ToString() + " => (" + minCorner.X + ", " + minCorner.Y  + ", " + minCorner.Z + ") ("
-                    + maxCorner.X + ", " + maxCorner.Y + ", " + maxCorner.Z + ")");
-                    */
+                if(shape is Group)
+                    Console.WriteLine(v.X.ToString() + ", " + v.Y.ToString() + ", " + v.Z.ToString() + " => (" + minCorner.X + ", " + minCorner.Y  + ", " + minCorner.Z + ") ("
+                     + maxCorner.X + ", " + maxCorner.Y + ", " + maxCorner.Z + ")");
+                    
             }
         }
 
@@ -168,6 +172,8 @@ namespace RayTracerLib
 
             if (tzmax < tmax)
                 tmax = tzmax;
+
+            if ((tmin < 0) && (tmax < 0)) return false;
 
             return true;
         }

@@ -46,7 +46,7 @@ namespace RenderTriangleMesh
             Point minXrear = new Point(g.Bounds.MinCorner.X, CameraPointsAt.Y, g.Bounds.MaxCorner.Z);
             Point minX = ((CameraVect.Dot((cameraPoint - minXfront).Normalize()) < CameraVect.Dot((cameraPoint - minXrear).Normalize()))) ? minXfront : minXrear;
 
-            Point maxYfront = new Point(CameraPointsAt.X,g.Bounds.MaxCorner.Y, g.Bounds.MinCorner.Z);
+            Point maxYfront = new Point(CameraPointsAt.X, g.Bounds.MaxCorner.Y, g.Bounds.MinCorner.Z);
             Point maxYrear = new Point(CameraPointsAt.X, g.Bounds.MaxCorner.Y, g.Bounds.MaxCorner.Z);
             Point maxY = ((CameraVect.Dot((cameraPoint - maxYfront).Normalize()) < CameraVect.Dot((cameraPoint - maxYrear).Normalize()))) ? maxYfront : maxYrear;
 
@@ -57,7 +57,7 @@ namespace RenderTriangleMesh
             double cameraFOVCos = Math.Min(CameraVect.Dot((cameraPoint - maxX).Normalize()), CameraVect.Dot((cameraPoint - minX).Normalize()));
             cameraFOVCos = Math.Min(cameraFOVCos, CameraVect.Dot((cameraPoint - maxY).Normalize()));
             cameraFOVCos = Math.Min(cameraFOVCos, CameraVect.Dot((cameraPoint - minY).Normalize()));
-            return Math.Acos(cameraFOVCos)*2;
+            return Math.Acos(cameraFOVCos) * 2;
         }
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Calculates the camera point. </summary>
@@ -90,28 +90,29 @@ namespace RenderTriangleMesh
             //Point centerPoint = new Point(g.Bounds.MaxCorner.X / 2, g.Bounds.MaxCorner.Y / 2, g.Bounds.MaxCorner.Z/2);
             //RayTracerLib.Vector centerVect = cameraPoint - centerPoint;
             //Ray cameraRay = new Ray(cameraPoint, centerVect);
-            return cameraPoint; 
+            return cameraPoint;
         }
-         ///-------------------------------------------------------------------------------------------------
-         /// <summary>  Color all of the shapes in a group recursively. </summary>
-         ///
-         /// <remarks>  Kemp, 1/5/2019. </remarks>
-         ///
-         /// <param name="g">   A Group to process. </param>
-         /// <param name="c">   A Color to apply. </param>
-         ///-------------------------------------------------------------------------------------------------
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>  Color all of the shapes in a group recursively. </summary>
+        ///
+        /// <remarks>  Kemp, 1/5/2019. </remarks>
+        ///
+        /// <param name="g">   A Group to process. </param>
+        /// <param name="c">   A Color to apply. </param>
+        ///-------------------------------------------------------------------------------------------------
 
-         static void ColorShapes(Group g, Color c) {
+        static void ColorShapes(Group g, Color c) {
             foreach (Shape s in g.Children) {
                 if (s is Group) {
                     ColorShapes((Group)s, c);
-                } else {
+                }
+                else {
                     s.Material.Color = c;
                 }
             }
         }
 
-       ///-------------------------------------------------------------------------------------------------
+        ///-------------------------------------------------------------------------------------------------
         /// <summary>   Main entry-point for this application. </summary>
         ///
         /// <remarks>   Kemp, 11/19/2018. </remarks>
@@ -122,6 +123,8 @@ namespace RenderTriangleMesh
         static void Main(string[] args) {
             bool show_help = false;
             bool mirror = false;
+            bool center = false;
+            bool bbox = false;
             string outputFile = "";
             uint canvasX = 200;
             uint canvasY = 200;
@@ -165,6 +168,10 @@ namespace RenderTriangleMesh
                     v => serial = v != null },
                 { "M|mirror", "Mirror image on X",
                     v => mirror = v != null },
+                { "C|center", "Center group at the origin",
+                    v => center = v != null },
+                { "B|boundingbox","Display bounding box of object",
+                v => bbox = v != null }
 
             };
 
@@ -181,13 +188,13 @@ namespace RenderTriangleMesh
 
             if (show_help) {
                 Console.WriteLine("RenderTriangleMesh [Options] inputFileName");
-                Console. WriteLine("Options: ");
+                Console.WriteLine("Options: ");
                 pa.WriteOptionDescriptions(Console.Out);
                 return;
             }
 
             /// The only positional parameter is the file name to process
-            
+
             if (extra.Count != 1) {
                 Console.Write("RenderTriangleMesh: exactly one input file name permitted.");
                 return;
@@ -203,7 +210,7 @@ namespace RenderTriangleMesh
             World w = new World();
 
             /// Read the triangular mesh and color all the triangles red.
-            OBJFileParser p = new OBJFileParser(ifn,OBJFileParser.TriangleType.Smooth, mirror);
+            OBJFileParser p = new OBJFileParser(ifn, OBJFileParser.TriangleType.Smooth, mirror);
             Color red = new Color(1, 0, 0);
             Color blue = new Color(0, 0, 1);
             Color gray = new Color(0.5, 0.5, 0.5);
@@ -213,7 +220,7 @@ namespace RenderTriangleMesh
             //w.AddObject(a);
             //w.AddObject(BoundingBox.Generate(a,new Color(1,1,0)));
 
-            foreach(Group gp in p.Groups) {
+            foreach (Group gp in p.Groups) {
                 g.AddObject(gp);
             }
             Console.WriteLine("Objects in default: " + g.Children.Count().ToString());
@@ -221,23 +228,26 @@ namespace RenderTriangleMesh
 
             /// Transform the group containing the triangular mesh to correspond to our world and camera view point.
             /// Move it back to origin, rotate it, and return it to where it was.
-            //g.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0-(g.Bounds.MinCorner.X+(g.Bounds.MaxCorner.X-g.Bounds.MinCorner.X)/2),
-            //    0- (g.Bounds.MinCorner.Y + (g.Bounds.MaxCorner.Y - g.Bounds.MinCorner.Y) / 2),0) * g.Transform);
-            g.Transform = (Matrix)(MatrixOps.CreateRotationXTransform((rotx * Math.PI) / 2) * MatrixOps.CreateRotationYTransform((roty * Math.PI) / 2) 
-                * MatrixOps.CreateRotationZTransform((rotz * Math.PI) / 2) * g.Transform);
+            if (center) g.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0-(g.Bounds.MinCorner.X+(g.Bounds.MaxCorner.X-g.Bounds.MinCorner.X)/2),
+                    0- (g.Bounds.MinCorner.Y + (g.Bounds.MaxCorner.Y - g.Bounds.MinCorner.Y) / 2),0 - (g.Bounds.MinCorner.Z + (g.Bounds.MaxCorner.Z - g.Bounds.MinCorner.Z) / 2)) * g.Transform);
+            if (rotx != 0) g.Transform = (Matrix)(MatrixOps.CreateRotationXTransform(rotx * (Math.PI / 2)) * g.Transform);
+            if (roty != 0) g.Transform = (Matrix)(MatrixOps.CreateRotationYTransform(roty * (Math.PI / 2)) * g.Transform);
+            if (rotz != 0) g.Transform = (Matrix)(MatrixOps.CreateRotationZTransform(rotz * (Math.PI / 2)) * g.Transform);
             /// Move the whole group into the first quadrant
-            g.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0 - g.Bounds.MinCorner.X, 0 - g.Bounds.MinCorner.Y, 0 ) * g.Transform);
+            g.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0 - g.Bounds.MinCorner.X, 0 - g.Bounds.MinCorner.Y, 0 - g.Bounds.MinCorner.Z) * g.Transform);
             w.AddObject(g);
 
             /// add bounding box
-            Group bb = BoundingBox.Generate(g, blue);
-            w.AddObject(bb);
+            if (bbox) {
+                Group bb = BoundingBox.Generate(g, blue);
+                w.AddObject(bb);
+            }
 
             /// three planes make up the background.
             Plane floor = new Plane();
             floor.Material.Pattern = new Checked3DPattern(new Color(1, 1, 1), new Color(0.75, 0.75, 0.75));
             floor.Material.Pattern.Transform = MatrixOps.CreateScalingTransform(2, 2, 2);
-            w.AddObject(floor);
+            //w.AddObject(floor);
 
             Plane wallz = (Plane)floor.Copy();
             wallz.Transform = (Matrix)(MatrixOps.CreateRotationXTransform(Math.PI / 2) * MatrixOps.CreateTranslationTransform(0, 0, 0));
@@ -255,21 +265,22 @@ namespace RenderTriangleMesh
 
             /// Render the image
             Console.WriteLine("Now rendering ...");
-            Point cameraPoint = CalcCameraPoint(g,cameraY,cameraZ);
+            Point cameraPoint = CalcCameraPoint(g, cameraY, cameraZ);
             Point cameraPointsAt = new Point(g.Bounds.MinCorner.X + (g.Bounds.MaxCorner.X - g.Bounds.MinCorner.X) / 2,
                 g.Bounds.MinCorner.Y + (g.Bounds.MaxCorner.Y - g.Bounds.MinCorner.Y) / 2,
                 g.Bounds.MinCorner.Z + (g.Bounds.MaxCorner.Z - g.Bounds.MinCorner.Z) / 2);
-            double cameraFOV = myFOV==0?CalcCameraFOV(cameraPoint, cameraPointsAt, g):myFOV;
+            double cameraFOV = myFOV == 0 ? CalcCameraFOV(cameraPoint, cameraPointsAt, g) : myFOV;
             Camera camera = new Camera(canvasX, canvasY, cameraFOV);
             camera.Transform = MatrixOps.CreateViewTransform(cameraPoint, cameraPointsAt, new RayTracerLib.Vector(0, 1, 0));
             Console.WriteLine("CameraPoint = " + cameraPoint.ToString() + "CameraPointsAt = " + cameraPointsAt.ToString());
             Console.WriteLine("CameraFOV = " + cameraFOV.ToString());
             Canvas image;
+
             if (serial) {
-                 image = w.Render(camera);
+                image = w.Render(camera);
             }
             else {
-                 image = w.ParallelRender(camera);
+                image = w.ParallelRender(camera);
             }
             Console.WriteLine("Now writing output ...");
             /*

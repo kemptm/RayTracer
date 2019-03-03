@@ -396,8 +396,9 @@ namespace RayTracerTest
                 new teststruct(new Point(7, 7, 7), new RayTracerLib.Vector(-1, -1, -1), 2),
             };
             Cube s = new Cube();
-            s.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(5, 5, 5) * MatrixOps.CreateRotationYTransform(Math.PI / 4));
-            Console.WriteLine(s.Transform.ToMatrixString());
+            s.Transform = (Matrix)(MatrixOps.CreateRotationYTransform(Math.PI / 4) * s.Transform);
+            s.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(5, 5, 5) * s.Transform);
+            //Console.WriteLine(s.Transform.ToMatrixString());
             foreach (teststruct tx in tests) {
                 Ray r = new Ray(tx.Origin, tx.Direction);
                 Assert.IsTrue(s.Bounds.Intersect(r));
@@ -430,6 +431,44 @@ namespace RayTracerTest
             }
             Assert.IsTrue(s.Bounds.MinCorner.Equals(new Point(5.65685, 4, -Math.Sqrt(2))));
             Assert.IsTrue(s.Bounds.MaxCorner.Equals(new Point(8.48528, 6, Math.Sqrt(2))));
+        }
+        [TestMethod]
+        public void BoundsGroupRotatedTranslated() {
+            Point p0 = new Point(0, 0, -1);
+            Point p1 = new Point(0, 0, 1);
+            Point p2 = new Point(0, -1, 0);
+            Point p3 = new Point(0, 1, 0);
+            Point p4 = new Point(-1, 0, 0);
+            Point p5 = new Point(1, 0, 0);
+            Triangle t0 = new Triangle(p0, p2, p4);
+            Triangle t1 = new Triangle(p2, p0, p5);
+            Triangle t2 = new Triangle(p0, p3, p4);
+            Triangle t3 = new Triangle(p3, p0, p5);
+            Triangle t4 = new Triangle(p1, p2, p4);
+            Triangle t5 = new Triangle(p2, p1, p5);
+            Triangle t6 = new Triangle(p1, p3, p4);
+            Triangle t7 = new Triangle(p3, p1, p5);
+            Group g = new Group();
+            g.AddObject(t0);
+            g.AddObject(t1);
+            g.AddObject(t2);
+            g.AddObject(t3);
+            g.AddObject(t4);
+            g.AddObject(t5);
+            g.AddObject(t6);
+            g.AddObject(t7);
+            g.Transform = (Matrix)(MatrixOps.CreateRotationXTransform(Math.PI / 2) * MatrixOps.CreateRotationYTransform(Math.PI / 2)  *  MatrixOps.CreateRotationZTransform(Math.PI / 2) );
+            g.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(1, 1, 1) * g.Transform);
+            Group g0 = new Group();
+            g0.AddObject(g);
+            Group bb =  BoundingBox.Generate(g);
+            Group bb0 = BoundingBox.Generate(g0);
+            Assert.IsTrue(g.Bounds.MinCorner.Equals(new Point(0, 0, 0)));
+            Assert.IsTrue(g.Bounds.MaxCorner.Equals(new Point(2, 2, 2)));
+            Assert.IsTrue(bb.Bounds.MinCorner.Equals(new Point(-0.02, -0.02, -0.02)));
+            Assert.IsTrue(bb.Bounds.MaxCorner.Equals(new Point(2.02, 2.02, 2.02)));
+            Assert.IsTrue(bb0.Bounds.MinCorner.Equals(new Point(-0.02, -0.02, -0.02)));
+            Assert.IsTrue(bb0.Bounds.MaxCorner.Equals(new Point(2.02, 2.02, 2.02)));
         }
     }
 }

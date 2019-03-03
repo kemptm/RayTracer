@@ -172,26 +172,35 @@ namespace RayTracerLib
                             SmoothTriangle st;
                             Triangle rt;
                             try {
-                                if (words[1].Contains('/')) {
-                                    string[] faceV0 = words[1].Split('/');
+                                string[] faceV0 = words[1].Split('/');
+                                if (faceV0.Count() > 2) {
                                     v0 = Int32.Parse(faceV0[0]); // vertex 0
                                     v1 = 0;
                                     v2 = 0;
+
+                                    if (v0 < 0) v0 = vertices.Count + v0 + 1;
+
                                     wvn0 = Int32.Parse(faceV0[2]); // normal 0
                                     wvn1 = 0;
                                     wvn2 = 0;
+
+                                    if (wvn0 < 0) wvn0 = normals.Count + wvn0 + 1;
 
                                     for (int vi = 2; vi < words.Count() - 1; vi += 1) {
                                         if (words[vi].Contains("/")) {
                                             string[] faceV = words[vi].Split('/');
                                             if (faceV.Count() == 3) {
                                                 v1 = Int32.Parse(faceV[0]); // vertex i
+                                                if (v1 < 0) v1 = vertices.Count + v1 + 1;
                                                 wvn1 = Int32.Parse(faceV[2]); // normal i
+                                                if (wvn1 < 0) wvn1 = normals.Count + wvn1 + 1;
                                             }
                                             faceV = words[vi + 1].Split('/');
                                             if (faceV.Count() == 3) {
                                                 v2 = Int32.Parse(faceV[0]); // vertex i+1
+                                                if (v2 < 0) v2 = vertices.Count + v2 + 1;
                                                 wvn2 = Int32.Parse(faceV[2]); // normal i+1
+                                                if (wvn2 < 0) wvn2 = normals.Count + wvn2 + 1;
                                             }
                                             if (tt == TriangleType.Smooth) { 
                                                 st = new SmoothTriangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy(),
@@ -213,10 +222,12 @@ namespace RayTracerLib
                                     }
                                 }
                                 else {
-                                    v0 = Int32.Parse(words[1]); // face indicies are 1 based
+                                    v0 = Int32.Parse(faceV0[0]); // face indicies are 1 based
                                     for (int vi = 2; vi < words.Count() - 1; vi += 1) {
-                                        v1 = Int32.Parse(words[vi]);
-                                        v2 = Int32.Parse(words[vi + 1]);
+                                        faceV0 = words[vi].Split('/');
+                                        v1 = Int32.Parse(faceV0[0]);
+                                        faceV0 = words[vi + 1].Split('/');
+                                        v2 = Int32.Parse(faceV0[0]);
                                          {
                                             rt = new Triangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy());
                                             rt.Material = currentMaterial.Copy();

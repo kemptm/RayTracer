@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Threading;
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 
@@ -187,15 +188,18 @@ namespace RayTracerLib
 
         public Canvas ParallelRender(Camera c) {
             Canvas image = new Canvas(c.Hsize, c.Vsize);
+            int running = 0;
             ParallelLoopResult res = Parallel.For(0, c.Vsize,y => {
                 //           for (int y = 0; y < c.Vsize; y++) {
-                Console.WriteLine("Rendering row: {0}", y);           
+                DateTime startTime = DateTime.Now;
+                Console.WriteLine("Rendering row: {0}; now running: {1}", y, Interlocked.Increment(ref running));           
                 for (int x = 0; x < c.Hsize; x++) {
                     Ray ray = c.RayForPixel((uint)x, (uint)y);
                     Color color = ColorAt(ray);
                     image.WritePixel((uint)x, (uint)y, color);
                }
-                Console.WriteLine("Rendering row: {0} is done.", y);
+                Console.WriteLine("Rendering row: {0} is done. Duration = {1}", y,DateTime.Now.Subtract(startTime));
+                Interlocked.Decrement(ref running);
             });
             return image;
         }

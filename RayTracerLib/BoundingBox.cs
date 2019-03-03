@@ -50,6 +50,7 @@ namespace RayTracerLib
             Material m = new Material("Bounding Box");
             m.Color = c;
             m.Ambient = new Color(1, 1, 1); // glows in the dark.
+            double diameterRatio = 0.01;
 
             Point minbb = s.Bounds.MinCorner;
             Point maxbb = s.Bounds.MaxCorner;
@@ -59,28 +60,28 @@ namespace RayTracerLib
             {
                 ls.MinY = minbb.Y;
                 ls.MaxY = maxbb.Y;
-                ls.Transform = MatrixOps.CreateTranslationTransform(minbb.X, 0, minbb.Z);
+                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(minbb.X, 0, minbb.Z) * MatrixOps.CreateScalingTransform(diameterRatio * (ls.MaxY - ls.MinY), 1, diameterRatio * (ls.MaxY - ls.MinY)));
                 ls.Material = m;
                 g.AddObject(ls);
 
                 ls = new Cylinder();
                 ls.MinY = minbb.Y;
                 ls.MaxY = maxbb.Y;
-                ls.Transform = MatrixOps.CreateTranslationTransform(minbb.X, 0, maxbb.Z);
+                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(minbb.X, 0, maxbb.Z) * MatrixOps.CreateScalingTransform(diameterRatio * (ls.MaxY - ls.MinY), 1, diameterRatio * (ls.MaxY - ls.MinY)));
                 ls.Material = m;
                 g.AddObject(ls);
 
                 ls = new Cylinder();
                 ls.MinY = minbb.Y;
                 ls.MaxY = maxbb.Y;
-                ls.Transform = MatrixOps.CreateTranslationTransform(maxbb.X, 0, minbb.Z);
+                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(maxbb.X, 0, minbb.Z) * MatrixOps.CreateScalingTransform(diameterRatio * (ls.MaxY - ls.MinY), 1, diameterRatio * (ls.MaxY - ls.MinY)));
                 ls.Material = m;
                 g.AddObject(ls);
 
                 ls = new Cylinder();
                 ls.MinY = minbb.Y;
                 ls.MaxY = maxbb.Y;
-                ls.Transform = MatrixOps.CreateTranslationTransform(maxbb.X, 0, maxbb.Z);
+                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(maxbb.X, 0, maxbb.Z) * MatrixOps.CreateScalingTransform(diameterRatio * (ls.MaxY - ls.MinY), 1, diameterRatio * (ls.MaxY - ls.MinY)));
                 ls.Material = m;
                 g.AddObject(ls);
             }
@@ -89,28 +90,28 @@ namespace RayTracerLib
                 ls = new Cylinder();
                 ls.MinY = minbb.X;
                 ls.MaxY = maxbb.X;
-                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, minbb.Y, minbb.Z) * MatrixOps.CreateRotationZTransform(-Math.PI / 2));
+                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, minbb.Y, minbb.Z) * MatrixOps.CreateRotationZTransform(-Math.PI / 2) * MatrixOps.CreateScalingTransform(diameterRatio * (ls.MaxY - ls.MinY), 1, diameterRatio * (ls.MaxY - ls.MinY)));
                 ls.Material = m;
                 g.AddObject(ls);
 
                 ls = new Cylinder();
                 ls.MinY = minbb.X;
                 ls.MaxY = maxbb.X;
-                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, minbb.Y, maxbb.Z) * MatrixOps.CreateRotationZTransform(-Math.PI / 2));
+                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, minbb.Y, maxbb.Z) * MatrixOps.CreateRotationZTransform(-Math.PI / 2) * MatrixOps.CreateScalingTransform(diameterRatio * (ls.MaxY - ls.MinY), 1, diameterRatio * (ls.MaxY - ls.MinY)));
                 ls.Material = m;
                 g.AddObject(ls);
 
                 ls = new Cylinder();
                 ls.MinY = minbb.X;
                 ls.MaxY = maxbb.X;
-                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, maxbb.Y, minbb.Z) * MatrixOps.CreateRotationZTransform(-Math.PI / 2));
+                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, maxbb.Y, minbb.Z) * MatrixOps.CreateRotationZTransform(-Math.PI / 2) * MatrixOps.CreateScalingTransform(diameterRatio * (ls.MaxY - ls.MinY), 1, diameterRatio * (ls.MaxY - ls.MinY)));
                 ls.Material = m;
                 g.AddObject(ls);
 
                 ls = new Cylinder();
                 ls.MinY = minbb.X;
                 ls.MaxY = maxbb.X;
-                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, maxbb.Y, maxbb.Z) * MatrixOps.CreateRotationZTransform(-Math.PI / 2));
+                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0, maxbb.Y, maxbb.Z) * MatrixOps.CreateRotationZTransform(-Math.PI / 2) * MatrixOps.CreateScalingTransform(diameterRatio * (ls.MaxY - ls.MinY), 1, diameterRatio * (ls.MaxY - ls.MinY)));
                 ls.Material = m;
                 g.AddObject(ls);
             }
@@ -119,28 +120,28 @@ namespace RayTracerLib
                 ls = new Cylinder();
                 ls.MinY = minbb.Z;
                 ls.MaxY = maxbb.Z;
-                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(minbb.X, minbb.Y, 0) * MatrixOps.CreateRotationXTransform(Math.PI / 2));
+                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(minbb.X, minbb.Y, 0) * MatrixOps.CreateRotationXTransform(Math.PI / 2) * MatrixOps.CreateScalingTransform(diameterRatio * (ls.MaxY - ls.MinY), 1, diameterRatio * (ls.MaxY - ls.MinY)));
                 ls.Material = m;
                 g.AddObject(ls);
 
                 ls = new Cylinder();
                 ls.MinY = minbb.Z;
                 ls.MaxY = maxbb.Z;
-                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(minbb.X, maxbb.Y, 0) * MatrixOps.CreateRotationXTransform(Math.PI / 2));
+                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(minbb.X, maxbb.Y, 0) * MatrixOps.CreateRotationXTransform(Math.PI / 2) * MatrixOps.CreateScalingTransform(diameterRatio * (ls.MaxY - ls.MinY), 1, diameterRatio * (ls.MaxY - ls.MinY)));
                 ls.Material = m;
                 g.AddObject(ls);
 
                 ls = new Cylinder();
                 ls.MinY = minbb.Z;
                 ls.MaxY = maxbb.Z;
-                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(maxbb.X, minbb.Y, 0) * MatrixOps.CreateRotationXTransform(Math.PI / 2));
+                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(maxbb.X, minbb.Y, 0) * MatrixOps.CreateRotationXTransform(Math.PI / 2) * MatrixOps.CreateScalingTransform(diameterRatio * (ls.MaxY - ls.MinY), 1, diameterRatio * (ls.MaxY - ls.MinY)));
                 ls.Material = m;
                 g.AddObject(ls);
 
                 ls = new Cylinder();
                 ls.MinY = minbb.Z;
                 ls.MaxY = maxbb.Z;
-                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(maxbb.X, maxbb.Y, 0) * MatrixOps.CreateRotationXTransform(Math.PI / 2));
+                ls.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(maxbb.X, maxbb.Y, 0) * MatrixOps.CreateRotationXTransform(Math.PI / 2) * MatrixOps.CreateScalingTransform(diameterRatio * (ls.MaxY - ls.MinY), 1, diameterRatio * (ls.MaxY - ls.MinY)));
                 ls.Material = m;
                 g.AddObject(ls);
             }

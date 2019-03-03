@@ -84,7 +84,7 @@ namespace RayTracerLib
                 if (o.Bounds.MaxCorner.Z > localBounds.MaxCorner.Z) localBounds.MaxCorner.Z = o.Bounds.MaxCorner.Z;
             }
             if (Transform.Equals(identity)) {
-                bounds = localBounds;
+                bounds = localBounds.Copy();
             }
             else {
                 BoundsCalc();
@@ -104,6 +104,7 @@ namespace RayTracerLib
             children.Remove(o);
             if (o.Parent == this) o.Parent = null;
             /// Recalculate the bounds of this group.
+            CalcLocalBounds();
             BoundsCalc();
         }
 
