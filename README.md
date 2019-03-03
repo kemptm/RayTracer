@@ -1,5 +1,5 @@
 # RayTracer
-![Hogwarts model](Documentation\Hogwarts_FM.png)
+![Hogwarts model](Documentation/Hogwarts_FM.png)
 ## An experiment in implementing a Ray Tracing renderer in C#.
 
 This project is a coding experiment with two goals in mind:
@@ -78,7 +78,7 @@ The code, while my own, is based on algorithms and constructs that I obtained fr
 
 I developed the features using a TDD methodology wherein the features are described by a series of tests. The project code was
 implemented to satisfy and made to pass each test.  The general style of 
-these tests is described in the book, _The Cucumber Book, Second Edition_ by Matt Wynne and Aslak Hellesøy, with Steve Tooke,
+these tests is described in the book, _The Cucumber Book, Second Edition_ by Matt Wynne and Aslak HellesÃ¸y, with Steve Tooke,
 published by Pragmatic Programmers(https://pragprog.com/book/hwcuc2/the-cucumber-book-second-edition). My particular implementation
 was via Visual Studio's Unit Test capabilities (https://docs.microsoft.com/en-us/visualstudio/test/quick-start-test-driven-development-with-test-explorer?view=vs-2017).
 
