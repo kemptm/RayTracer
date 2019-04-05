@@ -50,6 +50,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
@@ -70,7 +71,9 @@
     <Compile Include="RaySphereIntersectionsTest.cs" />
     <Compile Include="ReflectionTest.cs" />
     <Compile Include="RefractionTest.cs" />
+    <Compile Include="ShadowsTest.cs" />
     <Compile Include="SmoothTriangleTest.cs" />
+    <Compile Include="TextureMapTest.cs" />
     <Compile Include="TriangleTest.cs" />
     <Compile Include="Tuples_Points_VectorsTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

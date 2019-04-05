@@ -166,8 +166,9 @@ namespace RayTracerLib
         public Canvas Render(Camera c) {
             Canvas image = new Canvas(c.Hsize, c.Vsize);
             for (int y = 0; y < c.Vsize; y++) {
-                //if (y % 10 == 0) Console.WriteLine("Rendering line " + y.ToString());
+                if (y % 10 == 0) Console.WriteLine("Rendering line " + y.ToString());
                 for (int x = 0; x < c.Hsize; x++) {
+                    //Console.Write("<{0},{1}> ", x, y);
                     Ray ray = c.RayForPixel((uint)x, (uint)y);
                     Color color = ColorAt(ray);
                     image.WritePixel((uint)x, (uint)y, color);
@@ -189,10 +190,11 @@ namespace RayTracerLib
         public Canvas ParallelRender(Camera c) {
             Canvas image = new Canvas(c.Hsize, c.Vsize);
             int running = 0;
+            int rowsLeft = (int)c.Vsize;
             ParallelLoopResult res = Parallel.For(0, c.Vsize,y => {
                 //           for (int y = 0; y < c.Vsize; y++) {
                 DateTime startTime = DateTime.Now;
-                Console.WriteLine("Rendering row: {0}; now running: {1}", y, Interlocked.Increment(ref running));           
+                Console.WriteLine("Rendering row: {0}; now running: {1}; {2} left", y, Interlocked.Increment(ref running), Interlocked.Decrement(ref rowsLeft));           
                 for (int x = 0; x < c.Hsize; x++) {
                     Ray ray = c.RayForPixel((uint)x, (uint)y);
                     Color color = ColorAt(ray);

@@ -24,8 +24,7 @@ namespace RayTracerLib
     /// <remarks>   Kemp, 11/8/2018. </remarks>
     ///-------------------------------------------------------------------------------------------------
 
-    public class Intersection
-    {
+    public class Intersection {
         protected Shape obj;
         protected double t;
         protected Point point;
@@ -37,6 +36,7 @@ namespace RayTracerLib
         protected double n1;
         protected double n2;
         protected Point underPoint;
+        protected Point overPoint;
         protected double u;
         protected double v;
 
@@ -46,7 +46,7 @@ namespace RayTracerLib
         /// <value> The object. </value>
         ///-------------------------------------------------------------------------------------------------
 
-        public Shape Obj { get { return obj; }  }
+        public Shape Obj { get { return obj; } set { obj = value; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets the distance, t, to the shape. </summary>
@@ -62,7 +62,7 @@ namespace RayTracerLib
         /// <value> The point. </value>
         ///-------------------------------------------------------------------------------------------------
 
-        public Point Point { get { return point; } }
+        public Point Point { get { return point; } set { point = value; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets the Eye Vector, eyev. </summary>
@@ -70,7 +70,7 @@ namespace RayTracerLib
         /// <value> The eyev. </value>
         ///-------------------------------------------------------------------------------------------------
 
-        public Vector Eyev { get { return eyev; } }
+        public Vector Eyev { get { return eyev; } set { eyev = value; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets the normal vector of the point of intersection. </summary>
@@ -78,7 +78,7 @@ namespace RayTracerLib
         /// <value> The normal. </value>
         ///-------------------------------------------------------------------------------------------------
 
-        public Vector Normalv { get { return normalv; } }
+        public Vector Normalv { get { return normalv; } set { normalv = value; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets the reflected vector from the light source. </summary>
@@ -119,6 +119,14 @@ namespace RayTracerLib
         ///-------------------------------------------------------------------------------------------------
 
         public Point UnderPoint { get { return underPoint; } }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Gets the over point. </summary>
+        ///
+        /// <value> The over point. </value>
+        ///-------------------------------------------------------------------------------------------------
+
+        public Point OverPoint { get { return overPoint; } }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets or sets the u property. </summary>
@@ -162,6 +170,17 @@ namespace RayTracerLib
             this.t = t;
             obj = o;
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Constructor. </summary>
+        ///
+        /// <remarks>   Kemp, 3/18/2019. </remarks>
+        ///
+        /// <param name="t">    The distance, t, of the object from the ray origin. </param>
+        /// <param name="o">    The object intersected. </param>
+        /// <param name="u">    The u. </param>
+        /// <param name="v">    The v. </param>
+        ///-------------------------------------------------------------------------------------------------
 
         public Intersection(double t, Shape o, double u, double v) {
             this.t = t;
@@ -220,7 +239,7 @@ namespace RayTracerLib
         ///-------------------------------------------------------------------------------------------------
 
         public Intersection Prepare(Ray r,List<Intersection> xs) {
-            const double shadowFudge = 0.0001;
+            const double shadowFudge = Ops.EPSILON;
             List<Shape> containers = new List<Shape>();
             // figure out refractive indexes at each point along the ray, in and out.
             foreach (Intersection i in xs) {
@@ -265,7 +284,8 @@ namespace RayTracerLib
             reflectv = r.Direction.Reflect(normalv);
             Vector NormalFudge = normalv * shadowFudge;
             underPoint = point - NormalFudge;
-            point = point + NormalFudge;
+            overPoint = point + NormalFudge;
+            // point = point + NormalFudge;
 
             prepared = true;
             return this;
@@ -291,12 +311,12 @@ namespace RayTracerLib
             Color refracted;
             // if no lights, then just compute ambient, etc wihtout light.
             if (w.Lights.Count == 0) {
-                return Ops.Lighting(obj.Material, obj, new LightPoint(), point, eyev, normalv, false) + ReflectedColor(w, recursionRemaining);
+                return Lighting(new LightPoint(), point, false) + ReflectedColor(w, recursionRemaining);
             }
             // For each light figure out contributions of reflected, refracted, and shade to color of point
             foreach (LightPoint l in w.Lights) {
 
-                shade = shade + Ops.Lighting(obj.Material, obj, l, point, eyev, normalv,point.IsShadowed(w,l));
+                shade = shade + Lighting(l, overPoint, overPoint.IsShadowed(w,l));
                 reflected = ReflectedColor(w,recursionRemaining);
                 refracted = RefractedColor(w, recursionRemaining);
 
@@ -306,6 +326,8 @@ namespace RayTracerLib
                     return shade + reflected * reflectance + refracted * (1 - reflectance);
                 }
 
+                //Console.WriteLine("{0} = {1} + {2} + {3}", shade + reflected + refracted, shade, reflected, refracted);
+                //Console.WriteLine("{0}", shade + reflected + refracted);
                 shade = shade + reflected + refracted;
             }
 
@@ -327,7 +349,7 @@ namespace RayTracerLib
             if (recursionRemaining <=0 ) return new Color(0, 0, 0);
             if (obj.Material.Reflective == 0) return new Color(0, 0, 0);
 
-            Ray reflectRay = new Ray(point, reflectv);
+            Ray reflectRay = new Ray(overPoint, reflectv);
             Color color = world.ColorAt(reflectRay, recursionRemaining - 1);
 
             return color * obj.Material.Reflective;
@@ -391,6 +413,78 @@ namespace RayTracerLib
             return r0 + (1 - r0) * cospow;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Determine Lighting of a point in space. </summary>
+        ///
+        /// <remarks>   Kemp, 3/21/2019. </remarks>
+        ///
+        /// <param name="light">    The light. </param>
+        /// <param name="inShadow"> (Optional) True to in shadow. </param>
+        ///
+        /// <returns>   A Color. </returns>
+        ///-------------------------------------------------------------------------------------------------
 
+        public Color Lighting(LightPoint light, Point pt, bool inShadow = false) {
+            Color ambient;
+            Color diffuse;
+            Color specular;
+            Color effectiveColor;
+
+            /// If there is a texture, use it.
+            if (obj.Material.Map_Ka != null) {
+                effectiveColor = obj.Material.Map_Ka.MapTexture(this) * light.Intensity;
+            }
+            // otherwise, if there is a pattern, use it, along with the ambient attribute.
+            else if (Obj.Material.Pattern != null) {
+                effectiveColor = obj.Material.Pattern.PatternAtObject(obj, pt) * light.Intensity;
+            }
+            // otherwise, use the specified color, along with the ambient attribute
+            else {
+                effectiveColor = obj.Material.Color * light.Intensity;
+            }
+            ambient = effectiveColor * obj.Material.Ambient;
+            // finally modulate the color by the light.
+
+            /// Calculate the ambient contribution
+            /// if we're shadowed from the light, ambient is all there is, so return it.
+            if (inShadow)
+                return ambient;
+
+            Color black = new Color(0, 0, 0);
+            // find the direction to the light source.
+            Vector lightv = (light.Position - pt).Normalize();
+
+            /// lightDotNormal represents the cosine of the angle between 
+            /// the light vector and the normal vector.  A negative number means the
+            /// light is on the other side of the surface. Ergo, no diffuse or specular contributions.
+            double lightDotNormal = lightv.Dot(normalv);
+            if (lightDotNormal < 0) {
+                diffuse = black;
+                specular = black;
+            }
+            else {
+                /// Compute the diffuse contribution
+                if (obj.Material.Map_Kd != null) diffuse = obj.Material.Map_Kd.MapTexture(this) * obj.Material.Diffuse * lightDotNormal;
+                else diffuse = effectiveColor * obj.Material.Diffuse * lightDotNormal;
+
+                /// reflectDotEye represents the cosine of the angle between the
+                /// reflection vector and the eye vector.  a negative number means the
+                /// light reflects away from the eye.  Ergo, no specular contribution.
+                Vector reflectv = (-lightv).Reflect(normalv);
+                double reflectDotEye = Math.Pow(reflectv.Dot(eyev), obj.Material.Shininess);
+                if (reflectDotEye < 0 || Ops.Equals(reflectDotEye,0.0)) {
+                    specular = black;
+                }
+                else {
+                    /// Compute the specular contribution
+                    if (obj.Material.Map_Ks != null) specular = light.Intensity * (obj.Material.Map_Ks.MapTexture(this) * obj.Material.Specular * reflectDotEye);
+                    specular = light.Intensity * (obj.Material.Specular * reflectDotEye);
+                }
+            }
+
+            /// Combine the contributions to the color and return it.
+            //Console.WriteLine("{0} = {1} + {2} + {3}", ambient + diffuse + specular, ambient, diffuse, specular);
+            return ambient + diffuse + specular;
+        }
     }
 }

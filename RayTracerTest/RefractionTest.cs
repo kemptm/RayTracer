@@ -381,7 +381,7 @@ namespace RayTracerTest
             xs2[2].Prepare(ray, xs2);
             Color c = xs[2].RefractedColor(world, 5);
             Color c2 = xs2[2].RefractedColor(world, 5);
-            Assert.IsTrue(c.Equals(new Color(0, 0.99878, 0.04724)));
+            Assert.IsTrue(c.Equals(new Color(0, 0.99888, 0.04725)));
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -432,7 +432,7 @@ namespace RayTracerTest
             Intersection hit = xs[0];
             hit.Prepare(r, xs);
             Color c1 = hit.Shade(w);
-            Assert.IsTrue(c1.Equals(new Color(.61962,0,0)));
+            Assert.IsTrue(c1.Equals(new Color(.61962, 0, 0)));
 
         }
 

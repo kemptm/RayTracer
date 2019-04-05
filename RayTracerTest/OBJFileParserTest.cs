@@ -187,24 +187,59 @@ namespace RayTracerTest
         }
 
         ///-------------------------------------------------------------------------------------------------
+        /// <summary>   (Unit Test Method) vertex normal records. </summary>
+        ///
+        /// <remarks>   Kemp, 11/21/2018. </remarks>
+        ///-------------------------------------------------------------------------------------------------
+
+        [TestMethod]
+        public void VertexTextureRecords() {
+            OBJFileParser p = new OBJFileParser("VertexTextureRecords.obj");
+            Assert.IsTrue(p.Textures[0].Equals(new Point(0, 0, 0)));
+            Assert.IsTrue(p.Textures[1].Equals(new Point(0.707, 0, 0)));
+            Assert.IsTrue(p.Textures[2].Equals(new Point(1, 2, 0)));
+        }
+
+        ///-------------------------------------------------------------------------------------------------
         /// <summary>   (Unit Test Method) faces with normals. </summary>
         ///
         /// <remarks>   Kemp, 11/21/2018. </remarks>
         ///-------------------------------------------------------------------------------------------------
 
         [TestMethod]
-        public void FacesWithNormals() {
+        public void FacesWithNormalsAndTextures() {
             OBJFileParser p = new OBJFileParser("FacesWithNormals.obj");
             Group g = p.DefaultGroup;
             SmoothTriangle t1 = (SmoothTriangle) g.Children[0];
-            SmoothTriangle t2 = (SmoothTriangle)g.Children[1];
+            SmoothTriangle t2 = (SmoothTriangle) g.Children[1];
+            Triangle t3 = (Triangle) g.Children[2];
+
             Assert.IsTrue(t1.V0.Equals(p.Verticies[0]));
             Assert.IsTrue(t1.V1.Equals(p.Verticies[1]));
             Assert.IsTrue(t1.V2.Equals(p.Verticies[2]));
             Assert.IsTrue(t1.N0.Equals(p.Normals[2]));
             Assert.IsTrue(t1.N1.Equals(p.Normals[0]));
             Assert.IsTrue(t1.N2.Equals(p.Normals[1]));
-            Assert.IsTrue(t2.Equals(t1));
+
+            Assert.IsTrue(t2.V0.Equals(t1.V0));
+            Assert.IsTrue(t2.V1.Equals(t1.V1));
+            Assert.IsTrue(t2.V2.Equals(t1.V2));
+            Assert.IsTrue(t2.N0.Equals(t1.N0));
+            Assert.IsTrue(t2.N1.Equals(t1.N1));
+            Assert.IsTrue(t2.N2.Equals(t1.N2));
+
+            Assert.IsTrue(t1.T0 == null);
+            Assert.IsTrue(t1.T1 == null);
+            Assert.IsTrue(t1.T2 == null);
+
+            Assert.IsTrue(t2.T0.Equals(new Point(0.5, 0.5, 0)));
+            Assert.IsTrue(t2.T1.Equals(new Point(0.5, 0.5, 0)));
+            Assert.IsTrue(t2.T2.Equals(new Point(0.5, 0.5, 0)));
+
+            Assert.IsTrue(t3.T0.Equals(new Point(0.25, 0.25, 0)));
+            Assert.IsTrue(t3.T1.Equals(new Point(0.1, 0.2, 0)));
+            Assert.IsTrue(t3.T2.Equals(new Point(0.5, 0.5, 0)));
+
         }
     }
 }

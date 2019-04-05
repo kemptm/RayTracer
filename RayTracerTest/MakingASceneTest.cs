@@ -189,7 +189,8 @@ namespace RayTracerTest
             List<Intersection> xs = new List<Intersection>();
             xs.Add(hit);
             hit.Prepare(ray,xs);
-            Assert.IsTrue(hit.Point.Equals(new Point(0, 0, -1.0001)));
+            Assert.IsTrue(hit.Obj.Equals(shape));
+            Assert.IsTrue(hit.Point.Equals(new Point(0, 0, -1)));
             Assert.IsTrue(hit.Eyev.Equals(new RayTracerLib.Vector(0, 0, -1)));
             Assert.IsTrue(hit.Normalv.Equals(new RayTracerLib.Vector(0, 0, -1)));
         }
@@ -474,13 +475,14 @@ namespace RayTracerTest
         [TestMethod]
         public void CameraRenderWorld() {
             World w = defaultWorld.Copy();
-            Camera c = new Camera(11, 11, Math.PI / 2);
+            Camera cam = new Camera(11, 11, Math.PI / 2);
             Point from = new Point(0, 0, -5);
             Point to = new Point(0, 0, 0);
             RayTracerLib.Vector up = new RayTracerLib.Vector(0, 1, 0);
-            c.Transform = MatrixOps.CreateViewTransform(from, to, up);
-            Canvas image = w.Render(c);
-            Assert.IsTrue(image.PixelAt(5, 5).Equals(new Color(0.38066, 0.47583, 0.2855)));
+            cam.Transform = MatrixOps.CreateViewTransform(from, to, up);
+            Canvas image = w.Render(cam);
+            Color c = image.PixelAt(5, 5);
+            Assert.IsTrue(c.Equals(new Color(0.38066, 0.47583, 0.2855)));
             
         }
 
@@ -604,24 +606,26 @@ namespace RayTracerTest
             List<Intersection> xs = new List<Intersection>();
             xs.Add(hit);
             hit.Prepare(ray, xs);
-            Assert.IsTrue((hit.Point.Z > -1.1) && (hit.Point.Z < -1));
+            Assert.IsTrue(hit.OverPoint.Z < -Ops.EPSILON / 2);
+            Assert.IsTrue(hit.Point.Z > hit.OverPoint.Z);
         }
+        /*
+                ///-------------------------------------------------------------------------------------------------
+                /// <summary>   (Unit Test Method) shadow offset point negative. </summary>
+                ///
+                /// <remarks>   Kemp, 12/4/2018. </remarks>
+                ///-------------------------------------------------------------------------------------------------
 
-        ///-------------------------------------------------------------------------------------------------
-        /// <summary>   (Unit Test Method) shadow offset point negative. </summary>
-        ///
-        /// <remarks>   Kemp, 12/4/2018. </remarks>
-        ///-------------------------------------------------------------------------------------------------
-
-        [TestMethod]
-        public void ShadowOffsetPointNegative() {
-            Ray ray = new Ray(new Point(0, 0, 5), new RayTracerLib.Vector(0, 0, -1));
-            Shape shape = new Sphere();
-            Intersection hit = new Intersection(4, shape);
-            List<Intersection> xs = new List<Intersection>();
-            xs.Add(hit);
-            hit.Prepare(ray, xs);
-            Assert.IsTrue((hit.Point.Z > 1) && (hit.Point.Z < 1.1));
-        }
+                [TestMethod]
+                public void ShadowOffsetPointNegative() {
+                    Ray ray = new Ray(new Point(0, 0, 5), new RayTracerLib.Vector(0, 0, -1));
+                    Shape shape = new Sphere();
+                    Intersection hit = new Intersection(4, shape);
+                    List<Intersection> xs = new List<Intersection>();
+                    xs.Add(hit);
+                    hit.Prepare(ray, xs);
+                    Assert.IsTrue((hit.Point.Z > 1) && (hit.Point.Z < 1.1));
+                }
+        */
     }
 }

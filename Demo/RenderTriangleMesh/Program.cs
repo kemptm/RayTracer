@@ -125,6 +125,8 @@ namespace RenderTriangleMesh
             bool mirror = false;
             bool center = false;
             bool bbox = false;
+            bool nm = false;
+            bool np = false;
             string outputFile = "";
             uint canvasX = 200;
             uint canvasY = 200;
@@ -171,7 +173,11 @@ namespace RenderTriangleMesh
                 { "C|center", "Center group at the origin",
                     v => center = v != null },
                 { "B|boundingbox","Display bounding box of object",
-                v => bbox = v != null }
+                v => bbox = v != null },
+                { "n|nomove","Don't move object to first quadrant",
+                v => nm = v != null },
+                { "p|noplane","Don't show the plane",
+                v => np = v != null }
 
             };
 
@@ -234,8 +240,10 @@ namespace RenderTriangleMesh
             if (roty != 0) g.Transform = (Matrix)(MatrixOps.CreateRotationYTransform(roty * (Math.PI / 2)) * g.Transform);
             if (rotz != 0) g.Transform = (Matrix)(MatrixOps.CreateRotationZTransform(rotz * (Math.PI / 2)) * g.Transform);
             /// Move the whole group into the first quadrant
-            g.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0 - g.Bounds.MinCorner.X, 0 - g.Bounds.MinCorner.Y, 0 - g.Bounds.MinCorner.Z) * g.Transform);
-            w.AddObject(g);
+            if (!nm) {
+                g.Transform = (Matrix)(MatrixOps.CreateTranslationTransform(0 - g.Bounds.MinCorner.X, 0 - g.Bounds.MinCorner.Y, 0 - g.Bounds.MinCorner.Z) * g.Transform);
+                w.AddObject(g);
+            }
 
             /// add bounding box
             if (bbox) {
@@ -244,23 +252,25 @@ namespace RenderTriangleMesh
             }
 
             /// three planes make up the background.
-            Plane floor = new Plane();
-            floor.Material.Pattern = new Checked3DPattern(new Color(1, 1, 1), new Color(0.75, 0.75, 0.75));
-            floor.Material.Pattern.Transform = MatrixOps.CreateScalingTransform(2, 2, 2);
-            //w.AddObject(floor);
+            if (!np) {
+                Plane floor = new Plane();
+                floor.Material.Pattern = new Checked3DPattern(new Color(1, 1, 1), new Color(0.75, 0.75, 0.75));
+                floor.Material.Pattern.Transform = MatrixOps.CreateScalingTransform(2, 2, 2);
 
-            Plane wallz = (Plane)floor.Copy();
-            wallz.Transform = (Matrix)(MatrixOps.CreateRotationXTransform(Math.PI / 2) * MatrixOps.CreateTranslationTransform(0, 0, 0));
-            //w.AddObject(wallz);
+                w.AddObject(floor);
 
-            Plane wallx = (Plane)floor.Copy();
-            wallx.Transform = (Matrix)(MatrixOps.CreateRotationZTransform(Math.PI / 2) * MatrixOps.CreateTranslationTransform(0, 0, 0));
-            //w.AddObject(wallx);
+                Plane wallz = (Plane)floor.Copy();
+                wallz.Transform = (Matrix)(MatrixOps.CreateRotationXTransform(Math.PI / 2) * MatrixOps.CreateTranslationTransform(0, 0, 0));
+                //w.AddObject(wallz);
 
-            Console.WriteLine(g.Bounds.ToString());
+                Plane wallx = (Plane)floor.Copy();
+                wallx.Transform = (Matrix)(MatrixOps.CreateRotationZTransform(Math.PI / 2) * MatrixOps.CreateTranslationTransform(0, 0, 0));
+                //w.AddObject(wallx);
+            }
+            Console.WriteLine("Bounds of object: " + g.Bounds.ToString());
 
-            w.AddLight(new LightPoint(new Point(50000, 70000, -50000), new Color(1, 1, 1)));
-            w.AddLight(new LightPoint(new Point(-50000, 70000, 50000), new Color(0.75, 0.75, 0.75)));
+            w.AddLight(new LightPoint(new Point(50000, 70000, -50000), new Color(0.5, 0.5, 0.5)));
+            // w.AddLight(new LightPoint(new Point(-50000, 70000, -50000), new Color(0.2, 0.2, 0.2)));
             // w.AddLight(new RTLightPoint(new RTPoint(0, 10, -10), new Color(0.5, 0.5, 0.5)));
 
             /// Render the image

@@ -278,8 +278,9 @@ namespace RayTracerLib
             return false;
         }
 
-        public Color Lighting(LightPoint light, Point worldPosition, Vector eyev, Vector normalv, bool inShadow = false) {
-            return new Color(0, 0, 0);
-        }
+       // public Color Lighting(LightPoint light, Point worldPosition, Vector eyev, Vector normalv, bool inShadow = false) {
+       //     return new Color(0, 0, 0);
+       // }
+       
     }
 }

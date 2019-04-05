@@ -79,6 +79,7 @@
     <Compile Include="MatrixOps.cs" />
     <Compile Include="Ray.cs" />
     <Compile Include="SmoothTriangle.cs" />
+    <Compile Include="TextureMap.cs" />
     <Compile Include="Triangle.cs" />
     <Compile Include="Tuple.cs" />
     <Compile Include="Vector.cs" />

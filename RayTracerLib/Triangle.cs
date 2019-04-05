@@ -31,10 +31,14 @@ namespace RayTracerLib
         protected Point v2;
         /// <summary>   The vector e0. </summary>
         protected Vector e0;
-        /// <summary>   The vectir e1. </summary>
+        /// <summary>   The vector e1. </summary>
         protected Vector e1;
         /// <summary>   The normal. </summary>
         protected Vector normal;
+        protected Point t0;
+        protected Point t1;
+        protected Point t2;
+        protected TextureMap texture;
 
 
         ///-------------------------------------------------------------------------------------------------
@@ -62,6 +66,30 @@ namespace RayTracerLib
         public Point V2 { get { return v2; } set { v2 = value; InitTriangle(); } }
 
         ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Gets or sets t0. One of the texture vertices. </summary>
+        ///
+        /// <value> t0. </value>
+        ///-------------------------------------------------------------------------------------------------
+
+        public Point T0 { get { return t0; } set { t0 = value; InitTriangle(); } }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Gets or sets t1. One of the texture vertices.</summary>
+        ///
+        /// <value> t1. </value>
+        ///-------------------------------------------------------------------------------------------------
+
+        public Point T1 { get { return t1; } set { t1 = value; InitTriangle(); } }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Gets or sets t2. One of the texture vertices.</summary>
+        ///
+        /// <value> t2. </value>
+        ///-------------------------------------------------------------------------------------------------
+
+        public Point T2 { get { return t2; } set { t2 = value; InitTriangle(); } }
+
+        ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets the edge vector between points v0 and v1 </summary>
         ///
         /// <value> The edge</value>
@@ -84,6 +112,14 @@ namespace RayTracerLib
         ///-------------------------------------------------------------------------------------------------
 
         public Vector Normal { get { return normal; } }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Gets or sets the texture. </summary>
+        ///
+        /// <value> The texture. </value>
+        ///-------------------------------------------------------------------------------------------------
+
+        public TextureMap Texture { get { return texture; } set { texture = value;} }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Default constructor. Constructs a degenerate triangle with all vertices at (0,0,0).</summary>
@@ -116,6 +152,29 @@ namespace RayTracerLib
             InitTriangle();
             BoundsCalc(); // calculate the bounds.
         }
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Constructor.  Constructs a triangle with the specified vertices.</summary>
+        ///
+        /// <remarks>   Kemp, 11/7/2018. </remarks>
+        ///
+        /// <param name="cv0">  The vertex v0 of the triangle. </param>
+        /// <param name="cv1">  The vertex v1 of the triangle. </param>
+        /// <param name="cv2">  The vertex v2 of the triangle. </param>
+        /// <param name="ct0">  The vertex v0 of the texture. </param>
+        /// <param name="ct1">  The vertex v1 of the texture. </param>
+        /// <param name="ct2">  The vertex v2 of the texture. </param>
+        ///-------------------------------------------------------------------------------------------------
+
+        public Triangle(Point cv0, Point cv1, Point cv2, Point ct0, Point ct1, Point ct2) {
+            v0 = cv0.Copy();
+            v1 = cv1.Copy();
+            v2 = cv2.Copy();
+            t0 = ct0.Copy();
+            t1 = ct1.Copy();
+            t2 = ct2.Copy();
+            InitTriangle();
+            BoundsCalc(); // calculate the bounds.
+        }
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Copy the shape override. </summary>
@@ -126,7 +185,7 @@ namespace RayTracerLib
         ///-------------------------------------------------------------------------------------------------
 
         public override Shape Copy() {
-            Triangle t = new Triangle(v0, v1, v2);
+            Triangle t = new Triangle(v0, v1, v2, t0, t1, t2);
             t.bounds = bounds.Copy();
             t.material = material.Copy();
             t.xform = (Matrix)xform.Clone();
@@ -257,6 +316,12 @@ namespace RayTracerLib
             e1 = v2 - v0;
             normal = e1.Cross(e0).Normalize(); // precalculate the normal
 
+        }
+
+        public void AddTexture(Point ct0, Point ct1, Point ct2) {
+            t0 = ct0;
+            t1 = ct1;
+            t2 = ct2;
         }
     }
 }

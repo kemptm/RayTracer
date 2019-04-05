@@ -65,14 +65,16 @@ namespace SpheresOnPlane
             left.Material.Specular = new Color(0.3, 0.3, 0.3);
             w.AddObject(left);
             /**/
-            Camera camera = new Camera(400, 200, Math.PI / 2);
+            Camera camera = new Camera(1400, 1200, Math.PI / 2);
             camera.Transform = MatrixOps.CreateViewTransform(new Point(1, 1.5, -5), new Point(0, 0, 0), new RayTracerLib.Vector(0, 1, 0));
 
             Canvas image = w.Render(camera);
 
             String ppm = image.ToPPM();
 
-            System.IO.File.WriteAllText(@"ToPPM.ppm", ppm);
+            //System.IO.File.WriteAllText(@"ToPPM.ppm", ppm);
+            string outputFile = "SphereOnPlane";
+            image.WritePNG(outputFile + ".png");
 
             Console.Write("Press Enter to finish ... ");
             Console.Read();

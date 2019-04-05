@@ -26,7 +26,7 @@ namespace RayTracerLib
         /// <value> The 00001. </value>
         ///-------------------------------------------------------------------------------------------------
 
-        public const double EPSILON = 0.00001;
+        public const double EPSILON = 0.0001;
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Tests if objects are considered equal within a specified Epsilon. </summary>
@@ -99,19 +99,27 @@ namespace RayTracerLib
         /// <returns>   A Color. </returns>
         ///-------------------------------------------------------------------------------------------------
 
-        public static Color Lighting(Material material, Shape obj, LightPoint light, Point worldPosition, Vector eyev, Vector normalv, bool inShadow = false) {
+        public static Color Lighting(Material material, Shape obj, LightPoint light, Point worldPosition, Vector eyev, Vector normalv,  bool inShadow = false) {
             Color ambient;
             Color diffuse;
             Color specular;
-            Color c;
+            Color effectiveColor;
 
-            /// If there is a pattern, start with its contribution.  This can include textures too.
-            if (material.Pattern != null) c = material.Pattern.PatternAtObject(obj,worldPosition);
-            else c = material.Color;
-            Color effectiveColor = c * light.Intensity;
-            
-            /// Calculate the ambient contribution
+            /// If there is a texture, use it.
+            //if (obj is Triangle && material.Map_Ka != null) ambient = obj.Material.Map_Ka.MapTexture() * material.Ambient;
+            // otherwise, if there is a pattern, use it, along with the ambient attribute.
+            //else 
+            if (material.Pattern != null) {
+                effectiveColor = material.Pattern.PatternAtObject(obj, worldPosition) * light.Intensity;
+            }
+            // otherwise, use the specified color, along with the ambient attribute
+            else {
+                effectiveColor = material.Color * light.Intensity;
+            }
+            // finally modulate the color by the light.
             ambient = effectiveColor * material.Ambient;
+
+            /// Calculate the ambient contribution
             /// if we're shadowed from the light, ambient is all there is, so return it.
             if (inShadow) return ambient;
 
@@ -129,8 +137,10 @@ namespace RayTracerLib
             }
             else {
                 /// Compute the diffuse contribution
+                //if (obj is Triangle && material.Map_Kd != null) diffuse = obj.Material.Map_Kd.MapTexture((Triangle)obj, u, v) * material.Diffuse * lightDotNormal;
+                //else 
                 diffuse = effectiveColor * material.Diffuse * lightDotNormal;
-                
+
                 /// reflectDotEye represents the cosine of the angle between the
                 /// reflection vector and the eye vector.  a negative number means the
                 /// light reflects away from the eye.  Ergo, no specular contribution.
@@ -141,6 +151,7 @@ namespace RayTracerLib
                 }
                 else {
                     /// Compute the specular contribution
+                    //if (obj is Triangle && material.Map_Ks != null) specular = light.Intensity * (obj.Material.Map_Ks.MapTexture((Triangle)obj, u, v) * material.Specular * reflectDotEye);
                     specular = light.Intensity * (material.Specular * reflectDotEye);
                 }
             }

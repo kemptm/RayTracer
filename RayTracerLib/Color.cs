@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace RayTracerLib
 {
@@ -79,6 +80,21 @@ namespace RayTracerLib
             W = Wa;
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Constructor. </summary>
+        ///
+        /// <remarks>   Kemp, 3/9/2019. </remarks>
+        ///
+        /// <param name="c">    The Color to assign. </param>
+        ///-------------------------------------------------------------------------------------------------
+
+        public Color(System.Drawing.Color c) {
+            X = (double)c.R / 255.0;
+            Y = (double)c.G / 255.0;
+            Z = (double)c.B / 255.0;
+            W = 0;
+        }
+
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         /// <summary>   Copies this object. </summary>
         ///
@@ -98,7 +114,7 @@ namespace RayTracerLib
         ////////////////////////////////////////////////////////////////////////////////////////////////////
 
         public override string ToString() {
-            return "C(" + v.ToString() + ")";
+            return "C(" + Red.ToString() + ", " + Green.ToString() + ", " + Blue.ToString() + ")";
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -282,6 +298,7 @@ namespace RayTracerLib
         public static Color operator *(Color c1, Color c2) {
             return c1.HadamardProduct(c2);
         }
+
 
 
 

@@ -33,9 +33,12 @@ namespace RayTracerLib
         protected Group defaultGroup;
         /// <summary>   The normals. </summary>
         protected List<Vector> normals;
+        protected List<Point> textures;
         protected MTLFileParser materials;
         protected Material currentMaterial;
         protected bool mirror;
+        protected int lineNo;
+
 
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Values that represent triangle types. </summary>
@@ -79,6 +82,15 @@ namespace RayTracerLib
         public List<Vector> Normals { get { return normals; } }
 
         ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Gets the vertex textures. </summary>
+        ///
+        /// <value> The textures. </value>
+        ///-------------------------------------------------------------------------------------------------
+
+        public List<Point> Textures { get { return textures; } }
+
+        public Group CurrentGroup { get { return currentGroup; } set { currentGroup = value; } }
+        ///-------------------------------------------------------------------------------------------------
         /// <summary>   Default constructor. </summary>
         ///
         /// <remarks>   Kemp, 11/21/2018. </remarks>
@@ -118,9 +130,43 @@ namespace RayTracerLib
             groups.Add(currentGroup);
             defaultGroup = currentGroup;
             normals = new List<Vector>();
+            textures = new List<Point>();
             mirror = false;
             currentMaterial = new Material();
+            lineNo = 0;
 
+
+        }
+
+        protected void ParseFaceNode(string node, ref int vertex, ref int texture, ref int normal) {
+            vertex = 0;
+            texture = 0;
+            normal = 0;
+
+            string[] v = node.Split('/');
+            try {
+                vertex = Int32.Parse(v[0]);
+                if (v.Count() > 1) {
+                    if (v[1] != "") {
+                        texture = Int32.Parse(v[1]);
+                    }
+                }
+                if (v.Count() > 2) {
+                    if(v[2] != "") {
+                        normal = Int32.Parse(v[2]);
+                    }
+                }
+            }
+            catch (Exception e) {
+                Console.WriteLine("line " + lineNo.ToString() + ":  Ill formed vertex reference: " + e.Message);
+                throw (e);
+            }
+
+            return;
+        }
+
+        public void AddToCurrentGroup(Shape s) {
+            currentGroup.AddObject(s);
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -132,8 +178,9 @@ namespace RayTracerLib
         ///-------------------------------------------------------------------------------------------------
 
         public void ParseFile(String file) {
+
+            //FileStream objFile = File.OpenRead(file);
             var lines = File.ReadLines(file);
-            int lineNo = 0;
             
 
             foreach (var line in lines) {
@@ -166,83 +213,65 @@ namespace RayTracerLib
                     case "f": // face
                         /// Face must have at least 3 vertices, but as many as necessary. They will be
                         /// parsed into triangles.
-                        int v0, v1, v2;
-                        int wvn0, wvn1, wvn2;
+                        int v0 = 0, v1 = 0, v2 = 0;
+                        int wvn0 = 0, wvn1 = 0, wvn2 = 0;
+                        int wtn0 = 0, wtn1 = 0, wtn2 = 0;
                         if (words.Count() >= 4) {
                             SmoothTriangle st;
                             Triangle rt;
                             try {
-                                string[] faceV0 = words[1].Split('/');
-                                if (faceV0.Count() > 2) {
-                                    v0 = Int32.Parse(faceV0[0]); // vertex 0
-                                    v1 = 0;
-                                    v2 = 0;
 
-                                    if (v0 < 0) v0 = vertices.Count + v0 + 1;
+                                ParseFaceNode(words[1], ref v0, ref wtn0, ref wvn0);
+                                
+                                if (v0 < 0) v0 = normals.Count + v0 + 1;
+                                if (wtn0 < 0) wtn0 = textures.Count + wtn0 + 1;
+                                if (wvn0 < 0) wvn0 = normals.Count + wvn0 + 1;
 
-                                    wvn0 = Int32.Parse(faceV0[2]); // normal 0
-                                    wvn1 = 0;
-                                    wvn2 = 0;
+                                for (int vi = 2; vi < words.Count() - 1; vi += 1) {
+                                    ParseFaceNode(words[vi], ref v1, ref wtn1, ref wvn1);
+                                       
+                                    if (v1 < 0) v1 = vertices.Count + v1 + 1;
+                                    if (wtn1 < 0) wtn1 = textures.Count + wtn1 + 1;
+                                    if (wvn1 < 0) wvn1 = normals.Count + wvn1 + 1;
 
-                                    if (wvn0 < 0) wvn0 = normals.Count + wvn0 + 1;
+                                    ParseFaceNode(words[vi + 1], ref v2, ref wtn2, ref wvn2);
 
-                                    for (int vi = 2; vi < words.Count() - 1; vi += 1) {
-                                        if (words[vi].Contains("/")) {
-                                            string[] faceV = words[vi].Split('/');
-                                            if (faceV.Count() == 3) {
-                                                v1 = Int32.Parse(faceV[0]); // vertex i
-                                                if (v1 < 0) v1 = vertices.Count + v1 + 1;
-                                                wvn1 = Int32.Parse(faceV[2]); // normal i
-                                                if (wvn1 < 0) wvn1 = normals.Count + wvn1 + 1;
-                                            }
-                                            faceV = words[vi + 1].Split('/');
-                                            if (faceV.Count() == 3) {
-                                                v2 = Int32.Parse(faceV[0]); // vertex i+1
-                                                if (v2 < 0) v2 = vertices.Count + v2 + 1;
-                                                wvn2 = Int32.Parse(faceV[2]); // normal i+1
-                                                if (wvn2 < 0) wvn2 = normals.Count + wvn2 + 1;
-                                            }
-                                            if (tt == TriangleType.Smooth) { 
-                                                st = new SmoothTriangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy(),
-                                                                                        normals[wvn0 - 1].Copy(), normals[wvn1 - 1].Copy(), normals[wvn2 - 1].Copy());
-                                                st.Material = currentMaterial.Copy();
-                                                currentGroup.AddObject(st);
-                                            } else {
-                                                rt = new Triangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy());
-                                                rt.Material = currentMaterial.Copy();
-                                                currentGroup.AddObject(rt);
-                                            }
-                                        }
+                                    if (v2 < 0) v2 = vertices.Count + v2 + 1;
+                                    if (wtn2 < 0) wtn2 = textures.Count + wtn2 + 1;
+                                    if (wvn2 < 0) wvn2 = normals.Count + wvn2 + 1;
 
-                                        else {
-                                            Console.WriteLine("line " + lineNo.ToString() + ":  Ill formed vertex reference");
-
-                                        }
-                                        
+                                    if (tt == TriangleType.Smooth && wvn0 != 0) {
+                                        st = new SmoothTriangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy());
+                                        if (wvn0 != 0) st.AddNormals(normals[wvn0 - 1].Copy(), normals[wvn1 - 1].Copy(), normals[wvn2 - 1].Copy());
+                                        if (wtn0 != 0) st.AddTexture(textures[wtn0 - 1].Copy(), textures[wtn1 - 1].Copy(), textures[wtn2 - 1].Copy());
+                                        st.Material = currentMaterial.Copy();
+                                        currentGroup.AddObject(st);
+                                    } else {
+                                        rt = new Triangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy());
+                                        if (wtn0 != 0) rt.AddTexture(textures[wtn0 - 1].Copy(), textures[wtn1 - 1].Copy(), textures[wtn2 - 1].Copy());
+                                        rt.Material = currentMaterial.Copy();
+                                        currentGroup.AddObject(rt);
                                     }
                                 }
-                                else {
-                                    v0 = Int32.Parse(faceV0[0]); // face indicies are 1 based
-                                    for (int vi = 2; vi < words.Count() - 1; vi += 1) {
-                                        faceV0 = words[vi].Split('/');
-                                        v1 = Int32.Parse(faceV0[0]);
-                                        faceV0 = words[vi + 1].Split('/');
-                                        v2 = Int32.Parse(faceV0[0]);
-                                         {
-                                            rt = new Triangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy());
-                                            rt.Material = currentMaterial.Copy();
-                                            currentGroup.AddObject(rt);
-                                        }
-                                    }
-                                } 
                             }
-                            catch (Exception e){
+                            catch (Exception e) {
                                 Console.WriteLine("line " + lineNo.ToString() + ":  Ill formed vertex reference: " + e.Message);
-                                break;
                             }
                         }
                         else {
-                           Console.WriteLine("line " + lineNo.ToString() + ":  Face must have at least 3 vertices");
+                            /*                            v0 = Int32.Parse(faceV0[0]); // face indicies are 1 based
+                                                        for (int vi = 2; vi < words.Count() - 1; vi += 1) {
+                                                            faceV0 = words[vi].Split('/');
+                                                            v1 = Int32.Parse(faceV0[0]);
+                                                            faceV0 = words[vi + 1].Split('/');
+                                                            v2 = Int32.Parse(faceV0[0]);
+                                                            {
+                                                                rt = new Triangle(vertices[v0 - 1].Copy(), vertices[v1 - 1].Copy(), vertices[v2 - 1].Copy());
+                                                                rt.Material = currentMaterial.Copy();
+                                                                currentGroup.AddObject(rt);
+                                                            }
+                                                        } */
+                            Console.WriteLine("line " + lineNo.ToString() + ":  Face must have at least 3 verticies. " );
                         }
                         break;
                     case "o": // object; same as group
@@ -281,7 +310,11 @@ namespace RayTracerLib
                         }
                         break;
                     case "mtllib":
-                        materials = new MTLFileParser(words[1]);
+                        //File mtlFile = File.OpenRead();
+                        string myPath = Path.GetDirectoryName(Path.GetFullPath(file));
+                        string mtlFilePath = myPath + "\\" + words[1];
+                        mtlFilePath = mtlFilePath.Replace(@"\",@"/");
+                        materials = new MTLFileParser(mtlFilePath);
                         break;
                     case "usemtl":
                         if (materials == null)
@@ -293,8 +326,23 @@ namespace RayTracerLib
                         }
                             break;
                     case "vt": // texture vertex
-                        // ignore this
-                        // break;
+                               /// Texture Vertex is simple case.  A simple point with exactly 2 coordinnates
+                        double t0, t1;
+                        if (words.Count() >= 3) { // may be a junk null string on the end.
+                            try {
+                                t0 = double.Parse(words[1]);
+                                t1 = double.Parse(words[2]);
+                            }
+                            catch (FormatException e) {
+                                Console.WriteLine("line " + lineNo.ToString() + ": " + e.Message);
+                                break;
+                            }
+                            textures.Add(new Point(t0, t1, 0));
+                        }
+                        else {
+                            Console.WriteLine("line " + lineNo.ToString() + ":  Ill formed texture");
+                        }
+                        break;
                     case "#": // comment
                         // ignore line.
                         break;

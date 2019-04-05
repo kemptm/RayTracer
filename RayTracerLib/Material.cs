@@ -130,6 +130,13 @@ namespace RayTracerLib
 
         protected uint illuminationMode;
 
+        protected TextureMap map_Ka;
+
+        protected TextureMap map_Kd;
+
+        protected TextureMap map_Ks;
+
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Gets or sets the name. </summary>
         ///
@@ -211,6 +218,12 @@ namespace RayTracerLib
 
         public uint IlluminationMode { get { return illuminationMode; } set { illuminationMode = value; } }
 
+        public TextureMap Map_Ka { get { return map_Ka; } set { map_Ka = value; } }
+
+        public TextureMap Map_Kd { get { return map_Kd; } set { map_Kd = value; } }
+
+        public TextureMap Map_Ks { get { return map_Ks; } set { map_Ks = value; } }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Default constructor. </summary>
         ///
@@ -233,6 +246,9 @@ namespace RayTracerLib
             transparency = 0;
             refractiveIndex = 1;
             illuminationMode = 2;
+            map_Ka = null;
+            map_Kd = null;
+            map_Ks = null;
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -309,7 +325,7 @@ namespace RayTracerLib
         /// <param name="ri">   The refractiveIndex attribute. </param>
         ///-------------------------------------------------------------------------------------------------
 
-        public Material(string n, Pattern p, Color c, Color a, Color d, Color sp, double sc, double re, double tr, double ri) {
+        public Material(string n, Pattern p, Color c, Color a, Color d, Color sp, double sc, double re, double tr, double ri, TextureMap mka, TextureMap mkd, TextureMap mks) {
             InitializeMaterial();
             name = n;
             if (p != null) pattern = p.Copy();
@@ -321,6 +337,9 @@ namespace RayTracerLib
             reflective = re;
             transparency = tr;
             refractiveIndex = ri;
+            map_Ka = mka;  // no need to copy.
+            map_Kd = mkd;  // no need to copy.
+            map_Ks = mks;  // no need to copy. 
         }
 
         ///-------------------------------------------------------------------------------------------------
@@ -348,7 +367,7 @@ namespace RayTracerLib
         /// <returns>   A Material. </returns>
         ///-------------------------------------------------------------------------------------------------
 
-        public Material Copy() => new Material(name, pattern, color, ambient, diffuse, specular, shininess, reflective, transparency, refractiveIndex);
+        public Material Copy() => new Material(name, pattern, color, ambient, diffuse, specular, shininess, reflective, transparency, refractiveIndex, map_Ka, map_Kd, map_Ks);
       
 
      }

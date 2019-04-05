@@ -83,6 +83,9 @@ namespace RayTracerTest
             Assert.IsTrue(st.N0.Equals(new Point(0, 1, 0)));
             Assert.IsTrue(st.N1.Equals(new Point(-1, 0, 0)));
             Assert.IsTrue(st.N2.Equals(new Point(1, 0, 0)));
+            Assert.IsTrue(st.T0 == null);
+            Assert.IsTrue(st.T1 == null);
+            Assert.IsTrue(st.T2 == null);
 
         }
 

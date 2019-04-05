@@ -66,6 +66,33 @@ namespace RayTracerTest
             Assert.IsTrue(t.V1.Equals(p1));
             Assert.IsTrue(t.V2.Equals(p2));
 
+            Assert.IsTrue(t.T0 == null);
+            Assert.IsTrue(t.T1 == null);
+            Assert.IsTrue(t.T2 == null);
+
+            Assert.IsTrue(t.E0.Equals(new Vector(-1, -1, 0)));
+            Assert.IsTrue(t.E1.Equals(new Vector(1, -1, 0)));
+            Assert.IsTrue(t.Normal.Equals(new Vector(0, 0, -1)));
+        }
+
+        [TestMethod]
+        public void CreateTriangleWithTexture() {
+            Point p0 = new Point(0, 1, 0);
+            Point p1 = new Point(-1, 0, 0);
+            Point p2 = new Point(1, 0, 0);
+            Point t0 = new Point(0, 2, 0);
+            Point t1 = new Point(-2, 0, 0);
+            Point t2 = new Point(2, 0, 0);
+            Triangle t = new Triangle(p0, p1, p2, t0, t1, t2);
+
+            Assert.IsTrue(t.V0.Equals(p0));
+            Assert.IsTrue(t.V1.Equals(p1));
+            Assert.IsTrue(t.V2.Equals(p2));
+
+            Assert.IsTrue(t.T0.Equals(t0));
+            Assert.IsTrue(t.T1.Equals(t1));
+            Assert.IsTrue(t.T2.Equals(t2));
+
             Assert.IsTrue(t.E0.Equals(new Vector(-1, -1, 0)));
             Assert.IsTrue(t.E1.Equals(new Vector(1, -1, 0)));
             Assert.IsTrue(t.Normal.Equals(new Vector(0, 0, -1)));

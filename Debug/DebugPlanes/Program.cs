@@ -81,7 +81,8 @@ namespace DebugPlanes
             ///-------------------------------------------------------------------------------------------------
 
             public override Bounds LocalBounds() {
-                throw new NotImplementedException();
+                //throw new NotImplementedException();
+                return new Bounds(new Point(0, 0, 0), new Point(1, 1, 1));
             }
         }
 

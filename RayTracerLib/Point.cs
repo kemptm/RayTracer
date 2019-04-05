@@ -236,7 +236,11 @@ namespace RayTracerLib
                 intersections.Remove(i);
             }
             Intersection h = Intersection.Hit(intersections);
-            if ((h != null) && (h.T < distance)) return true;
+            if (h != null) {
+                h.Prepare(ray, intersections);
+                if (h.T < distance)
+                    return true;
+            }
             return false;
         }
 
@@ -249,6 +253,18 @@ namespace RayTracerLib
         ///-------------------------------------------------------------------------------------------------
 
         public Point Copy() => new Point(X, Y, Z);
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Tests if this Point is considered equal to another. </summary>
+        ///
+        /// <remarks>   Kemp, 3/21/2019. </remarks>
+        ///
+        /// <param name="p">    A Point to compare with this point. </param>
+        ///
+        /// <returns>   True if all coordinates (W, X, Y, Z) are considered equal, false if they are not. </returns>
+        ///-------------------------------------------------------------------------------------------------
+
+        public bool Equals(Point p) => Ops.Equals(W,p.W) && Ops.Equals(X, p.X) && Ops.Equals(Y, p.Y) && Ops.Equals(Z, p.Z);
 
     }
 }

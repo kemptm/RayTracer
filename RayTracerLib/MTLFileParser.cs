@@ -1,4 +1,10 @@
-﻿using System;
+﻿///-------------------------------------------------------------------------------------------------
+// file:	MTLFileParser.cs
+//
+// summary:	Implements the material file parser class
+///-------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,15 +13,38 @@ using System.Threading.Tasks;
 
 namespace RayTracerLib
 {
+    ///-------------------------------------------------------------------------------------------------
+    /// <summary>   A  Wavefront material (MTL) file parser. </summary>
+    ///
+    /// <remarks>   Kemp, 3/9/2019. </remarks>
+    ///-------------------------------------------------------------------------------------------------
+
     public class MTLFileParser
     {
+        /// <summary>   The materials. </summary>
         protected List<Material> materials;
+        /// <summary>   Filename of the material file. </summary>
         protected String filename;
+        /// <summary>   The current material. </summary>
         protected Material currentMaterial;
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Default constructor. </summary>
+        ///
+        /// <remarks>   Kemp, 3/9/2019. </remarks>
+        ///-------------------------------------------------------------------------------------------------
 
         public MTLFileParser() {
             materials = new List<Material>();
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Constructor. </summary>
+        ///
+        /// <remarks>   Kemp, 3/9/2019. </remarks>
+        ///
+        /// <param name="fn">   The filename. </param>
+        ///-------------------------------------------------------------------------------------------------
 
         public MTLFileParser(String fn) {
             filename = fn;
@@ -23,8 +52,15 @@ namespace RayTracerLib
             ParseFile();
         }
 
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Parse file. </summary>
+        ///
+        /// <remarks>   Kemp, 3/9/2019. </remarks>
+        ///-------------------------------------------------------------------------------------------------
+
         public void ParseFile() {
             try {
+                string myPath = Path.GetDirectoryName(Path.GetFullPath(filename));
                 var lines = File.ReadLines(filename);
                 int lineNo = 0;
                 double w1 = 0;
@@ -89,6 +125,15 @@ namespace RayTracerLib
                         case "Tr": // transparency (1-d)
                             currentMaterial.Transparency = w1;
                             break;
+                        case "map_Ka": // Ambient texture map
+                            currentMaterial.Map_Ka = new TextureMap(myPath + "\\" + words[1]);
+                            break;
+                        case "map_Kd": // Diffuse texture map
+                            currentMaterial.Map_Kd = new TextureMap(myPath + "\\" + words[1]);
+                            break;
+                        case "map_Ks": // Specular texture map
+                            currentMaterial.Map_Ks = new TextureMap(myPath + "\\" + words[1]);
+                            break;
                         case "#": // comment
                                   // ignore line.
                             break;
@@ -104,6 +149,17 @@ namespace RayTracerLib
                 Console.WriteLine("Materials file not found.  Ignoring");
             }
         }
+
+        ///-------------------------------------------------------------------------------------------------
+        /// <summary>   Gets a material. </summary>
+        ///
+        /// <remarks>   Kemp, 3/9/2019. </remarks>
+        ///
+        /// <param name="m">    The message text. </param>
+        ///
+        /// <returns>   The material. </returns>
+        ///-------------------------------------------------------------------------------------------------
+
         public Material GetMaterial(string m) => materials.Find(n => n.Name.Equals(m));
     }
 }

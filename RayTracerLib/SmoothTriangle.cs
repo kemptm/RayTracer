@@ -59,6 +59,9 @@ namespace RayTracerLib
         public SmoothTriangle() {
         }
 
+        public SmoothTriangle(Point cv0, Point cv1, Point cv2) : base(cv0, cv1, cv2) {
+        }
+
         ///-------------------------------------------------------------------------------------------------
         /// <summary>   Constructor. </summary>
         ///
@@ -91,6 +94,13 @@ namespace RayTracerLib
             return n1 * hit.U 
                  + n2 * hit.V 
                  + n0 * (1 - hit.U - hit.V);
+        }
+
+        public void AddNormals(Vector cn0, Vector cn1, Vector cn2) {
+            n0 = cn0;
+            n1 = cn1;
+            n2 = cn2;
+
         }
     }
 }
