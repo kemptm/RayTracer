@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.IO;
 using NDesk.Options;
 using MathNet.Numerics.LinearAlgebra.Double;
+//using MathNet.Numerics;
 using RayTracerLib;
 
 namespace RenderTriangleMesh

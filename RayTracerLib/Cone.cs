@@ -259,7 +259,7 @@ namespace RayTracerLib
         public override Bounds LocalBounds() {
             Bounds b = new Bounds(new Point(-double.MaxValue, -double.MaxValue, -double.MaxValue), new Point(double.MaxValue, double.MaxValue, double.MaxValue));
             if (minY == -double.MaxValue || maxY == double.MaxValue) return b;
-
+            /*
             List<Point> verticies = new List<Point>();
             verticies.Add(new Point(-Math.Abs(minY), minY, -Math.Abs(minY)));
             verticies.Add(new Point(-Math.Abs(minY), minY,  Math.Abs(minY)));
@@ -270,7 +270,7 @@ namespace RayTracerLib
             verticies.Add(new Point(-Math.Abs(maxY), maxY,  Math.Abs(maxY)));
             verticies.Add(new Point( Math.Abs(maxY), maxY, -Math.Abs(maxY)));
             verticies.Add(new Point( Math.Abs(maxY), maxY,  Math.Abs(maxY)));
-
+            */
             b.MinCorner.X = -Math.Max(Math.Abs(minY), Math.Abs(maxY));
             b.MinCorner.Y = Math.Min(minY,maxY);
             b.MinCorner.Z = b.MinCorner.X;
